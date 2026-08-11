@@ -59,7 +59,17 @@
         <li><a href="index.html" class="nav-link">Home</a></li>
         <li><a href="about.html" class="nav-link">About</a></li>
         <li><a href="gallery.html" class="nav-link is-active" aria-current="page">Gallery</a></li>
-        <li><a href="services.html" class="nav-link">Services</a></li>
+        <li class="has-dropdown">
+          <a href="services.html" class="nav-link">Services</a>
+          <ul class="dropdown-menu">
+            <li><a href="services.html#wedding">Wedding</a></li>
+            <li><a href="services.html#reception">Reception</a></li>
+            <li><a href="services.html#birthday">Birthday Celebrations</a></li>
+            <li><a href="services.html#kaathukuthal">Kaathukuthal</a></li>
+            <li><a href="services.html#engagement">Engagement</a></li>
+            <li><a href="services.html#family">Family Functions</a></li>
+          </ul>
+        </li>
         <li><a href="contact.html" class="nav-link">Contact</a></li>
       </ul>
       <a href="enquiry.html" class="btn btn-gold nav-cta">Enquire Now</a>
@@ -106,108 +116,100 @@
       </p>
     </header>
 
-    <div class="filters reveal" role="tablist" aria-label="Filter gallery by category" id="filters">
-      <button class="filter is-active" role="tab" aria-selected="true" data-filter="all" type="button">All</button>
-      <button class="filter" role="tab" aria-selected="false" data-filter="hall" type="button">Hall</button>
-      <button class="filter" role="tab" aria-selected="false" data-filter="dining" type="button">Dining</button>
-      <button class="filter" role="tab" aria-selected="false" data-filter="events" type="button">Events</button>
-      <button class="filter" role="tab" aria-selected="false" data-filter="exterior" type="button">Exterior</button>
+    <div class="gallery-stack-container" id="galleryStackContainer">
+      <ul class="gallery" id="galleryGrid">
+        <li class="gal-item gal-wide" data-category="exterior">
+          <button class="gal-btn" type="button"
+                  data-full="assets/images/optimized/hero-night-1600.webp"
+                  data-caption="The mandapam illuminated with festoon lighting on a function night">
+            <img src="assets/images/optimized/hero-night-800.webp" width="1537" height="1023" loading="lazy" decoding="async"
+                 alt="The mandapam illuminated with golden festoon lighting at night">
+            <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
+          </button>
+        </li>
+        <li class="gal-item" data-category="hall">
+          <button class="gal-btn" type="button"
+                  data-full="assets/images/top.webp"
+                  data-caption="The main hall arranged with seating for a large function">
+            <img src="assets/images/top.webp" width="680" height="453" loading="lazy" decoding="async"
+                 alt="The main hall arranged with rows of white seating">
+            <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
+          </button>
+        </li>
+        <li class="gal-item" data-category="hall">
+          <button class="gal-btn" type="button"
+                  data-full="assets/images/g-7.webp"
+                  data-caption="Decorative false ceiling and mezzanine level of the main hall">
+            <img src="assets/images/g-7.webp" width="680" height="383" loading="lazy" decoding="async"
+                 alt="Decorative illuminated false ceiling above the main hall">
+            <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
+          </button>
+        </li>
+        <li class="gal-item" data-category="dining">
+          <button class="gal-btn" type="button"
+                  data-full="assets/images/g-6.webp"
+                  data-caption="The separate dining hall with stainless serving counters">
+            <img src="assets/images/g-6.webp" width="680" height="453" loading="lazy" decoding="async"
+                 alt="Dining hall with long stainless steel serving counters and seating">
+            <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
+          </button>
+        </li>
+        <li class="gal-item" data-category="events">
+          <button class="gal-btn" type="button"
+                  data-full="assets/images/g-2.webp"
+                  data-caption="A ribbon-cutting at the flower-decorated main entrance">
+            <img src="assets/images/g-2.webp" width="680" height="453" loading="lazy" decoding="async"
+                 alt="Guests at a ribbon-cutting by the flower-decorated main entrance">
+            <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
+          </button>
+        </li>
+        <li class="gal-item" data-category="events">
+          <button class="gal-btn" type="button"
+                  data-full="assets/images/g-5.webp"
+                  data-caption="Guests gathered at the entrance canopy for a function">
+            <img src="assets/images/g-5.webp" width="680" height="453" loading="lazy" decoding="async"
+                 alt="Guests gathered under the entrance canopy during a function">
+            <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
+          </button>
+        </li>
+        <li class="gal-item" data-category="events">
+          <button class="gal-btn" type="button"
+                  data-full="assets/images/g-4.webp"
+                  data-caption="A traditional honouring ceremony on the decorated stage">
+            <img src="assets/images/g-4.webp" width="680" height="453" loading="lazy" decoding="async"
+                 alt="A traditional honouring ceremony taking place on the decorated stage">
+            <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
+          </button>
+        </li>
+        <li class="gal-item" data-category="events">
+          <button class="gal-btn" type="button"
+                  data-full="assets/images/g-3.webp"
+                  data-caption="An ornate ceremonial seat set out on the polished hall floor">
+            <img src="assets/images/g-3.webp" width="680" height="453" loading="lazy" decoding="async"
+                 alt="An ornate golden ceremonial seat on the polished hall floor">
+            <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
+          </button>
+        </li>
+        <li class="gal-item" data-category="events">
+          <button class="gal-btn" type="button"
+                  data-full="assets/images/gallery-1.webp"
+                  data-caption="Guests being honoured with a shawl during a family function">
+            <img src="assets/images/gallery-1.webp" width="680" height="453" loading="lazy" decoding="async"
+                 alt="A guest being honoured with a shawl during a family function">
+            <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
+          </button>
+        </li>
+        <li class="gal-item gal-wide" data-category="exterior">
+          <button class="gal-btn" type="button"
+                  data-full="assets/images/optimized/exterior-day-1400.webp"
+                  data-caption="The temple-style facade of the mandapam by day">
+            <img src="assets/images/optimized/exterior-day-900.webp" width="1600" height="902" loading="lazy" decoding="async"
+                 alt="The temple-style facade of the mandapam photographed by day">
+            <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
+          </button>
+        </li>
+      </ul>
     </div>
-
-    <ul class="gallery" id="galleryGrid">
-      <li class="gal-item gal-wide" data-category="exterior">
-        <button class="gal-btn" type="button"
-                data-full="assets/images/optimized/hero-night-1600.webp"
-                data-caption="The mandapam illuminated with festoon lighting on a function night">
-          <img src="assets/images/optimized/hero-night-800.webp" width="1537" height="1023" loading="lazy" decoding="async"
-               alt="The mandapam illuminated with golden festoon lighting at night">
-          <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
-        </button>
-      </li>
-      <li class="gal-item" data-category="hall">
-        <button class="gal-btn" type="button"
-                data-full="assets/images/top.webp"
-                data-caption="The main hall arranged with seating for a large function">
-          <img src="assets/images/top.webp" width="680" height="453" loading="lazy" decoding="async"
-               alt="The main hall arranged with rows of white seating">
-          <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
-        </button>
-      </li>
-      <li class="gal-item" data-category="hall">
-        <button class="gal-btn" type="button"
-                data-full="assets/images/g-7.webp"
-                data-caption="Decorative false ceiling and mezzanine level of the main hall">
-          <img src="assets/images/g-7.webp" width="680" height="383" loading="lazy" decoding="async"
-               alt="Decorative illuminated false ceiling above the main hall">
-          <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
-        </button>
-      </li>
-      <li class="gal-item" data-category="dining">
-        <button class="gal-btn" type="button"
-                data-full="assets/images/g-6.webp"
-                data-caption="The separate dining hall with stainless serving counters">
-          <img src="assets/images/g-6.webp" width="680" height="453" loading="lazy" decoding="async"
-               alt="Dining hall with long stainless steel serving counters and seating">
-          <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
-        </button>
-      </li>
-      <li class="gal-item" data-category="events">
-        <button class="gal-btn" type="button"
-                data-full="assets/images/g-2.webp"
-                data-caption="A ribbon-cutting at the flower-decorated main entrance">
-          <img src="assets/images/g-2.webp" width="680" height="453" loading="lazy" decoding="async"
-               alt="Guests at a ribbon-cutting by the flower-decorated main entrance">
-          <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
-        </button>
-      </li>
-      <li class="gal-item" data-category="events">
-        <button class="gal-btn" type="button"
-                data-full="assets/images/g-5.webp"
-                data-caption="Guests gathered at the entrance canopy for a function">
-          <img src="assets/images/g-5.webp" width="680" height="453" loading="lazy" decoding="async"
-               alt="Guests gathered under the entrance canopy during a function">
-          <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
-        </button>
-      </li>
-      <li class="gal-item" data-category="events">
-        <button class="gal-btn" type="button"
-                data-full="assets/images/g-4.webp"
-                data-caption="A traditional honouring ceremony on the decorated stage">
-          <img src="assets/images/g-4.webp" width="680" height="453" loading="lazy" decoding="async"
-               alt="A traditional honouring ceremony taking place on the decorated stage">
-          <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
-        </button>
-      </li>
-      <li class="gal-item" data-category="events">
-        <button class="gal-btn" type="button"
-                data-full="assets/images/g-3.webp"
-                data-caption="An ornate ceremonial seat set out on the polished hall floor">
-          <img src="assets/images/g-3.webp" width="680" height="453" loading="lazy" decoding="async"
-               alt="An ornate golden ceremonial seat on the polished hall floor">
-          <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
-        </button>
-      </li>
-      <li class="gal-item" data-category="events">
-        <button class="gal-btn" type="button"
-                data-full="assets/images/gallery-1.webp"
-                data-caption="Guests being honoured with a shawl during a family function">
-          <img src="assets/images/gallery-1.webp" width="680" height="453" loading="lazy" decoding="async"
-               alt="A guest being honoured with a shawl during a family function">
-          <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
-        </button>
-      </li>
-      <li class="gal-item gal-wide" data-category="exterior">
-        <button class="gal-btn" type="button"
-                data-full="assets/images/optimized/exterior-day-1400.webp"
-                data-caption="The temple-style facade of the mandapam by day">
-          <img src="assets/images/optimized/exterior-day-900.webp" width="1600" height="902" loading="lazy" decoding="async"
-               alt="The temple-style facade of the mandapam photographed by day">
-          <span class="gal-overlay" aria-hidden="true"><span class="gal-view">View</span></span>
-        </button>
-      </li>
-    </ul>
-
-    <p class="gal-empty" id="galEmpty" hidden>No photographs in this category yet.</p>
 
     <p class="gal-note reveal">
       More photographs of the rooms and other facilities are available on request —
@@ -358,6 +360,7 @@
   </button>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="js/script.js" defer></script>
 </body>
 </html>
