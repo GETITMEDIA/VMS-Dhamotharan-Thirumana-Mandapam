@@ -213,6 +213,7 @@
       items.forEach(function (item) {
         var match = value === 'all' || item.getAttribute('data-category') === value;
         if (match) {
+          item.style.transitionDelay = (shown * 40) + 'ms';
           shown++;
           item.classList.remove('is-hidden');
           item.classList.add('is-entering');
@@ -221,6 +222,7 @@
             window.requestAnimationFrame(function () { item.classList.remove('is-entering'); });
           });
         } else {
+          item.style.transitionDelay = '0ms';
           item.classList.add('is-hidden');
         }
       });
@@ -551,6 +553,173 @@
     if (el) el.textContent = String(new Date().getFullYear());
   }
 
+  /* ---------------------------------------------------------------
+     3D Layered Grid-to-Stack Morph Gallery
+     --------------------------------------------------------------- */
+  function initGalleryStack() {
+    var container = $('#galleryGrid');
+    var wrapper = $('#galleryStackContainer');
+    if (!container) return;
+
+    var cards = $$('.gal-item', container);
+    var isStacked = true;
+    
+    // Check if gsap is loaded, if not wait a bit
+    if (typeof gsap === 'undefined') {
+      setTimeout(initGalleryStack, 100);
+      return;
+    }
+
+    function isMobile() {
+      return window.innerWidth <= 768;
+    }
+
+    function getLayoutOffsets() {
+      // Temporarily clear all transforms to get actual layout positions
+      cards.forEach(function (card) {
+        gsap.set(card, { x: 0, y: 0, rotate: 0, scale: 1 });
+      });
+
+      var containerWidth = container.clientWidth;
+      var containerHeight = container.clientHeight;
+
+      return cards.map(function (card) {
+        var cardWidth = card.offsetWidth;
+        var cardHeight = card.offsetHeight;
+        var cardLeft = card.offsetLeft;
+        var cardTop = card.offsetTop;
+
+        // Calculate offset to bring the card to the exact center of the container
+        var offsetX = (containerWidth / 2) - (cardWidth / 2) - cardLeft;
+        var offsetY = (containerHeight / 2) - (cardHeight / 2) - cardTop;
+
+        return {
+          x: offsetX,
+          y: offsetY
+        };
+      });
+    }
+
+    function stackCards(animate) {
+      if (isMobile()) {
+        resetCards(false);
+        return;
+      }
+      
+      isStacked = true;
+      var offsets = getLayoutOffsets();
+
+      cards.forEach(function (card, i) {
+        gsap.killTweensOf(card);
+        var offset = offsets[i];
+        
+        // Random slight rotation
+        var randomRot = (Math.random() * 12) - 6; // between -6deg and 6deg
+        
+        // Progressive scale for "small to big" look in stack (top cards are bigger, bottom smaller)
+        var stackScale = 0.86 + ((cards.length - 1 - i) / cards.length) * 0.08;
+
+        if (animate) {
+          gsap.to(card, {
+            x: offset.x,
+            y: offset.y,
+            rotate: randomRot,
+            scale: stackScale,
+            zIndex: 100 - i,
+            duration: 0.85,
+            ease: "expo.out",
+            overwrite: "auto"
+          });
+        } else {
+          gsap.set(card, {
+            x: offset.x,
+            y: offset.y,
+            rotate: randomRot,
+            scale: stackScale,
+            zIndex: 100 - i
+          });
+        }
+      });
+    }
+
+    function resetCards(animate) {
+      isStacked = false;
+      cards.forEach(function (card) {
+        gsap.killTweensOf(card);
+      });
+
+      if (animate === false || isMobile()) {
+        gsap.set(cards, {
+          x: 0,
+          y: 0,
+          rotate: 0,
+          scale: 1,
+          zIndex: function (i) { return 100 - i; },
+          overwrite: "auto"
+        });
+      } else {
+        gsap.to(cards, {
+          x: 0,
+          y: 0,
+          rotate: 0,
+          scale: 1,
+          zIndex: function (i) { return 100 - i; },
+          duration: 0.85,
+          ease: "expo.out",
+          stagger: {
+            amount: 0.22,
+            from: "start"
+          },
+          overwrite: "auto"
+        });
+      }
+    }
+
+    // Set initial z-indices
+    cards.forEach(function (card, i) {
+      gsap.set(card, { zIndex: 100 - i });
+    });
+
+    // Run stacking immediately
+    setTimeout(function () {
+      stackCards(false);
+    }, 150);
+
+    // Hover triggers
+    container.addEventListener('mouseenter', function() {
+      if (!isMobile()) resetCards(true);
+    });
+    container.addEventListener('mouseleave', function () {
+      if (!isMobile()) stackCards(true);
+    });
+
+    // Support touch devices (tap to toggle stack/expanded state on tablets)
+    container.addEventListener('click', function (e) {
+      if (isMobile()) return;
+      if (e.target.closest('.gal-btn')) return;
+      if (isStacked) {
+        resetCards(true);
+      } else {
+        stackCards(true);
+      }
+    });
+
+    // Re-stack on resize
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        if (isMobile()) {
+          resetCards(false);
+        } else if (isStacked) {
+          stackCards(false);
+        } else {
+          resetCards(false);
+        }
+      }, 100);
+    });
+  }
+
   /* --------------------------------------------------------------- */
   function boot() {
     initStickyHeader();
@@ -560,6 +729,7 @@
 
     initTourVideo();
     initGalleryFilter();
+    initGalleryStack();
     Lightbox.init();
     initEnquiryForm();
     initBackToTop();
