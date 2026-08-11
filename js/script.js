@@ -178,37 +178,6 @@
   }
 
   /* ---------------------------------------------------------------
-     Hero background video — only where it is worth the bytes
-     --------------------------------------------------------------- */
-  function initHeroVideo() {
-    var video = $('#heroVideo');
-    if (!video) return;
-
-    if (reducedMotion.matches) return;
-    if (!window.matchMedia('(min-width: 861px)').matches) return;
-
-    var conn = navigator.connection;
-    if (conn && (conn.saveData || /2g/.test(conn.effectiveType || ''))) return;
-
-    var source = document.createElement('source');
-    source.src = 'assets/vedios/hero-loop.mp4';
-    source.type = 'video/mp4';
-    video.appendChild(source);
-    video.preload = 'auto';
-    video.load();
-
-    video.addEventListener('canplay', function () {
-      var playing = video.play();
-      if (playing && playing.then) {
-        playing.then(function () { video.classList.add('is-live'); })
-               .catch(function () { /* autoplay blocked — the poster image stays */ });
-      } else {
-        video.classList.add('is-live');
-      }
-    }, { once: true });
-  }
-
-  /* ---------------------------------------------------------------
      Feature video player
      --------------------------------------------------------------- */
   function initTourVideo() {
@@ -588,7 +557,7 @@
     initMobileNav();
     initReveal();
     initCounters();
-    initHeroVideo();
+
     initTourVideo();
     initGalleryFilter();
     Lightbox.init();

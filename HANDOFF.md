@@ -51,16 +51,48 @@ Ran a headless Chrome (CDP) sweep over all 6 pages × 6 widths (1920/1440/1024/7
 - All local `src`/`href` targets resolve (script-verified).
 - No duplicate element IDs, no broken in-page anchors.
 
-### ⚠️ TWO FIXES WERE APPLIED AFTER THAT SWEEP AND ARE **NOT YET RE-VERIFIED**
+### Fixes applied and since re-verified
 1. `<img id="lbImg" src="">` → `<img id="lbImg" alt="">` in `index.html` + `gallery.html`
    (the empty `src` made the browser re-request the page itself as an image), and
    `img.src = ''` → `img.removeAttribute('src')` in the Lightbox `close()` function.
-2. Added a **scroll-reveal backstop** in `initReveal()`. IntersectionObserver alone
-   missed elements during fast scrolling (only 4 of 52 `.reveal` elements fired),
-   which could leave content stuck at `opacity: 0` after an anchor jump or fast flick.
+2. Added a **scroll-reveal backstop** in `initReveal()`. IntersectionObserver alone can
+   miss elements during a fast flick or anchor jump, leaving them stuck at `opacity: 0`.
    A throttled `sweep()` on scroll/resize/load now reveals anything past the fold.
+   **Confirmed: 100% of `.reveal` elements fire on all 6 pages at all 6 widths.**
 
-**→ First job: re-run verification and confirm reveals now reach ~100% and nothing regressed.**
+Note when re-testing: the site sets `scroll-behavior: smooth`, so an automated
+`window.scrollTo(0, y)` loop animates and never reaches the bottom, which makes reveals
+look broken. Set `document.documentElement.style.scrollBehavior = 'auto'` and use
+`behavior: 'instant'` in test harnesses.
+
+### Hero rework (latest change)
+The hero previously used an all-over radial veil that darkened the edges to 80% black,
+`object-position: center 60%` which cropped the top off the facade, and a wrong intrinsic
+size (`1024×1024` instead of `1537×1023`) with the `srcset` removed. The mandapam was
+barely visible. Now:
+- **Desktop:** uses a **widened hero image**, `assets/images/optimized/hero-wide-{1200,1800,2400}.webp`,
+  served via `<picture>` at `min-width: 761px`. The client photo is 3:2, which is too narrow
+  for a wide browser window — `object-fit: cover` kept slicing the roofline off the top and
+  the base off the bottom on shorter windows (e.g. 1366×655).
+  The wide file is 2742×1080 (~2.54:1), generated from the original by extending each side
+  with a stretched, blurred, slightly darkened copy of the edge column, plus a vignette.
+  Because the scene is a night shot, the extension reads as the night sky simply continuing —
+  colours match exactly at the seam, so there is no visible join.
+  With that extra sky on either side, `object-fit: cover` is now safe: the crop lands on
+  empty sky, never on the building. Regenerate with the ffmpeg `hstack` recipe in §3 if the
+  source photo is ever replaced.
+  An earlier attempt used `contain` plus a blurred CSS backdrop (`.hero-media::before`) —
+  that worked but the blurred side panels looked poor, so it was replaced. Do not reinstate it.
+  Also: banded veil (soft pool behind the headline + thin top/bottom bands) keeps the
+  building bright, and the mobile fallback keeps the true `1537×1023` original.
+- **Mobile (≤760px):** the hero **stacks instead of overlaying** — the photo renders at its
+  true 3:2 ratio with the whole facade visible, and the copy sits on solid charcoal beneath
+  it. A wide building cannot fill a tall phone viewport without being cropped to its middle
+  columns, and centred text on top hid whatever survived. Do not revert this to a
+  full-bleed overlay on mobile.
+- The hero eyebrow had been changed to "Premium Wedding Planning & Celebrations", which is
+  the reference site's positioning and factually wrong here — this is a venue, not a wedding
+  planner. Restored to "Near Pondicherry • Dindivanam Bypass Road".
 
 ---
 
@@ -86,6 +118,36 @@ photos, and no logo file. Work within this. Do NOT substitute stock photography.
 
 Note: the 8 `g-*/top/gallery-1` files are only **680 px wide**. Do not upscale them.
 The lightbox is deliberately capped at 940 px so they never look soft.
+
+### ⚠️ Stray images in `assets/images/optimized/` — do not use these
+Another session left these behind. They are **not referenced by any page**, and two of them
+should not be published:
+
+| File | Verdict |
+|---|---|
+| `vms_night_widescreen.png` | **Do not use.** It is an AI-altered rendering of the venue — the night sky has been repainted to blue/purple twilight and surrounding details differ from the real photograph. Publishing an AI-modified image of a real business as if it were a real photo misrepresents the venue. |
+| `velvet_mandapam_hero.png` | **Do not use.** Named after the reference site; unverified provenance. |
+| `hero-cine-{900,1200,1536}.webp` | Genuine crop of the real photo, but it loses the top and base of the facade — the exact problem that was reported twice. Superseded by `hero-wide-*`. |
+| `vms_day_hero.jpg` | Duplicate of the original day photo; `exterior-day-*.webp` is the optimised version in use. |
+
+Safe to delete all of the above. Only publish images derived from the client's own
+photographs in `assets/images/`.
+
+### ⚠️ `hero-wide-*.webp` has been deleted once already
+A later session removed all three `hero-wide-*.webp` files while `index.html` still
+referenced them, which left the desktop hero showing nothing. If the hero ever goes blank,
+check that these three files exist and regenerate with the command below.
+
+### Regenerating the widened desktop hero
+```
+ffmpeg -i "assets/images/VMS Dhamotharan Thirumana night.png" -filter_complex \
+ "[0:v]scale=-2:1080[m];[m]split=3[main][a][b];\
+  [a]crop=3:1080:0:0,scale=560:1080,boxblur=24:1,eq=brightness=-0.05[L];\
+  [b]crop=3:1080:iw-3:0,scale=560:1080,boxblur=24:1,eq=brightness=-0.05[R];\
+  [L][main][R]hstack=inputs=3,vignette=PI/4.5[out]" \
+ -map "[out]" -frames:v 1 hero-wide-src.png
+# then encode at 1200 / 1800 / 2400 wide with -c:v libwebp -quality 73
+```
 
 ### Generated derivatives (safe to regenerate; ffmpeg is installed)
 - `assets/images/optimized/hero-night-{800,1200,1600}.webp` — 2.2 MB PNG → 165 KB
