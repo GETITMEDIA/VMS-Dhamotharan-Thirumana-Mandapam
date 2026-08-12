@@ -2101,6 +2101,60 @@ img[data-fade].is-loaded {
   .eyebrow-rule { transform: none !important; }
 }
 
+/* =====================================================================
+   23. Occasion rows (services.html)
+   Alternating image / copy rows built on the existing .fac-row component,
+   with the photo and the heading both linking through to that occasion.
+   ===================================================================== */
+.occasion-rows { margin-top: clamp(2rem, 4vw, 3rem); }
+
+/* .frame is an <a> here, so it needs to lay out as a block */
+a.frame {
+  display: block;
+  color: inherit;
+}
+a.frame:hover { color: inherit; }
+
+/* a gold wash confirms the photograph is a link, not just decoration */
+a.frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* below .frame-gold::after, so the gold hairline stays visible over the wash */
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(74, 16, 25, 0) 45%, rgba(74, 16, 25, .55));
+  opacity: 0;
+  transition: opacity .45s var(--ease);
+}
+a.frame:hover::before,
+a.frame:focus-visible::before { opacity: 1; }
+
+.fac-title-link {
+  color: inherit;
+  transition: color .3s var(--ease);
+}
+.fac-title-link:hover,
+.fac-row:hover .fac-title-link { color: var(--maroon); }
+
+/* the arrow on the Learn More button slides as the row is hovered */
+.fac-cta .btn .ico { transition: transform .35s var(--ease); }
+.fac-cta .btn:hover .ico,
+.fac-row:hover .fac-cta .btn .ico { transform: translateX(4px); }
+
+/* Rows are generously spaced on desktop; on phones the .fac-row rule already
+   stacks them to one column, so only the rhythm needs adjusting. */
+.occasion-rows .fac-row { margin-bottom: clamp(3rem, 6vw, 5.5rem); }
+.occasion-rows .fac-row:last-child { margin-bottom: 0; }
+
+@media (max-width: 900px) {
+  /* stacked: photo always above its copy, whichever side it took on desktop */
+  .occasion-rows .fac-row-rev .fac-media { order: 0; }
+  .occasion-rows .fac-row { margin-bottom: clamp(2.5rem, 8vw, 3.5rem); }
+  .occasion-rows .fac-cta .btn { width: 100%; justify-content: center; }
+}
+
 .floating-wa {
   opacity: 0;
   pointer-events: none;
