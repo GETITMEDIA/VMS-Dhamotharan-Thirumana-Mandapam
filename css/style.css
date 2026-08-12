@@ -1,6 +1,6 @@
-﻿/* =====================================================================
+/* =====================================================================
    VMS Dhamotharan Thirumana Mandapam
-   Stylesheet ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â design tokens, layout, components, responsive
+   Stylesheet — design tokens, layout, components, responsive
    ===================================================================== */
 
 /* ---------- 1. Tokens ---------- */
@@ -688,7 +688,7 @@ button { font: inherit; color: inherit; }
   align-items: center;
 }
 .about-visual { position: relative; }
-.about-visual .frame { aspect-ratio: 4 / 3.4; }
+.about-visual .frame { aspect-ratio: var(--ar, 1400 / 790); }
 
 .about-badge {
   position: absolute;
@@ -787,7 +787,9 @@ button { font: inherit; color: inherit; }
 .event-link { display: block; color: inherit; }
 .event-link:hover { color: inherit; }
 
-.event-media { aspect-ratio: 4 / 3.15; }
+/* Ratio comes from the picture itself (--ar is set by initMediaFit); the
+   fallback matches the 1200x896 event artwork so nothing is cropped. */
+.event-media { aspect-ratio: var(--ar, 1200 / 896); }
 .event-media img {
   width: 100%; height: 100%;
   object-fit: cover;
@@ -900,7 +902,7 @@ button { font: inherit; color: inherit; }
 .fac-row:last-child { margin-bottom: 0; }
 .fac-row-rev .fac-media { order: 2; }
 
-.fac-media .frame { aspect-ratio: 4 / 3; }
+.fac-media .frame { aspect-ratio: var(--ar, 3 / 2); }
 
 .fac-step {
   display: block;
@@ -973,6 +975,8 @@ button { font: inherit; color: inherit; }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: clamp(.7rem, 1.4vw, 1.1rem);
+  /* tiles keep their own height instead of stretching to the tallest sibling */
+  align-items: start;
 }
 .gal-wide { grid-column: span 2; }
 
@@ -998,11 +1002,11 @@ button { font: inherit; color: inherit; }
   border: 0;
   background: var(--cream-deep);
   cursor: pointer;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: var(--ar, 3 / 2);
   overflow: hidden;
 }
 .gal-wide .gal-btn {
-  aspect-ratio: 2 / 1;
+  aspect-ratio: var(--ar, 3 / 2);
 }
 .gal-btn img {
   width: 100%; height: 100%;
@@ -1503,7 +1507,7 @@ a.contact-v { font-size: 1.15rem; font-weight: 500; color: var(--maroon); }
 
 /* ---------- 19. Lightbox ---------- */
 /* When the lightbox carries the HTML `hidden` attribute, ensure it truly
-   disappears ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â `display:grid` on `.lightbox` would otherwise override the
+   disappears — `display:grid` on `.lightbox` would otherwise override the
    browser's built-in `[hidden]{display:none}` rule. */
 .lightbox[hidden] { display: none !important; }
 
@@ -1663,7 +1667,6 @@ body.is-locked { overflow: hidden; }
   .enquire-grid { grid-template-columns: minmax(0, 1fr); }
 
   .fac-row-rev .fac-media { order: 0; }
-  .about-visual .frame { aspect-ratio: 16 / 11; }
   .about-badge { right: 12px; bottom: -18px; }
 
   .enquire-grid-rev { grid-template-columns: minmax(0, 1fr); }
@@ -1809,6 +1812,23 @@ body.is-locked { overflow: hidden; }
   .hero-img { animation: none; transform: none; }
 }
 
+/* --- Input Prefix --- */
+.input-prefix {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.prefix-txt {
+  position: absolute;
+  left: 1rem;
+  color: var(--text-light);
+  pointer-events: none;
+  font-weight: 500;
+}
+.input-prefix input {
+  padding-left: 2.8rem;
+}
+
 /* --- print --- */
 @media print {
   .site-header, .dock, .to-top, .hero-scroll, .video-sec, .map-wrap, .lightbox { display: none !important; }
@@ -1820,6 +1840,265 @@ body.is-locked { overflow: hidden; }
   0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
   70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
   100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+/* =====================================================================
+   22. Motion system
+   Reveal variants, card craft, hover polish. Everything here is additive:
+   remove this block and the site still works, just flatter.
+   ===================================================================== */
+
+:root {
+  --ease-out:   cubic-bezier(.16, 1, .3, 1);      /* long, settled landing */
+  --ease-spring: cubic-bezier(.34, 1.36, .64, 1); /* slight overshoot      */
+  --rv-dur: .95s;
+}
+
+/* ---------- 22.1 Reveal variants -------------------------------------
+   .reveal keeps working as before. Add data-reveal="…" for a different
+   entrance; --d (set from data-delay, or auto-staggered by JS) offsets it. */
+.reveal {
+  --rv-y: 26px;
+  --rv-x: 0px;
+  --rv-s: 1;
+  --rv-rot: 0deg;
+  opacity: 0;
+  transform: translate3d(var(--rv-x), var(--rv-y), 0) scale(var(--rv-s)) rotate(var(--rv-rot));
+  transition:
+    opacity   var(--rv-dur) var(--ease-out),
+    transform var(--rv-dur) var(--ease-out),
+    filter    var(--rv-dur) var(--ease-out),
+    clip-path var(--rv-dur) var(--ease-out);
+  transition-delay: calc(var(--d, 0) * 90ms);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+/* the transform hint is only worth carrying while the element is in flight */
+.reveal:not(.is-in) { will-change: transform, opacity; }
+.reveal.is-in { will-change: auto; }
+
+.reveal[data-reveal="fade"]  { --rv-y: 0px; }
+.reveal[data-reveal="up"]    { --rv-y: 44px; }
+.reveal[data-reveal="left"]  { --rv-x: -46px; --rv-y: 0px; }
+.reveal[data-reveal="right"] { --rv-x: 46px;  --rv-y: 0px; }
+.reveal[data-reveal="zoom"]  { --rv-y: 0px; --rv-s: .93; }
+/* filter only appears on the variant that needs it — a blur(0px) on every
+   revealed element would force needless GPU rasterisation site-wide */
+.reveal[data-reveal="blur"] { --rv-y: 20px; filter: blur(14px); }
+.reveal[data-reveal="blur"].is-in { filter: blur(0); }
+.reveal[data-reveal="rise"]  { --rv-y: 54px; --rv-s: .97; --rv-rot: .6deg; }
+
+/* Curtain: the image is uncovered bottom-to-top instead of sliding in.
+   Only ever applied to boxes that already clip their contents (.frame,
+   .fac-media) — clip-path on a box with overhanging decoration would cut it. */
+.reveal[data-reveal="mask"] {
+  --rv-y: 0px;
+  --rv-s: 1.06;
+  opacity: 1;
+  clip-path: inset(0 0 100% 0);
+}
+.reveal[data-reveal="mask"].is-in { clip-path: inset(0 0 0 0); }
+
+/* Headline words lifting one after another (built by initSplitHeadings) */
+.word-rise { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.word-rise > i {
+  display: inline-block;
+  font-style: inherit;
+  transform: translateY(105%) rotate(3deg);
+  opacity: 0;
+  transition: transform .85s var(--ease-out), opacity .6s var(--ease-out);
+  transition-delay: calc(var(--w, 0) * 55ms);
+}
+.is-in .word-rise > i,
+.word-rise.is-in > i { transform: none; opacity: 1; }
+
+/* ---------- 22.2 Images: load-in, and never a squashed picture --------
+   Each media box takes its --ar from the file's own dimensions, so
+   object-fit: cover has nothing left to crop. */
+.frame img,
+.event-media img,
+.gal-btn img { backface-visibility: hidden; }
+
+/* Blur-up: a photo fades and sharpens as it decodes rather than snapping in */
+img[data-fade] {
+  opacity: 0;
+  filter: blur(12px);
+  transform: scale(1.03);
+  transition: opacity .7s var(--ease-out), filter .7s var(--ease-out), transform .7s var(--ease-out);
+}
+img[data-fade].is-loaded {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  /* hand the transform back to the slow hover zoom once the photo has landed */
+  transition: opacity .7s var(--ease-out), filter .7s var(--ease-out), transform .85s var(--ease);
+}
+/* the card's own hover zoom must win over the load-in transform */
+.event-card:hover .event-media img[data-fade].is-loaded,
+.gal-btn:hover img[data-fade].is-loaded { transform: scale(1.08); }
+.frame:hover img[data-fade].is-loaded { transform: scale(1.045); }
+
+/* ---------- 22.3 Card craft ------------------------------------------
+   Tilt is driven by JS (--tx/--ty in degrees, --mx/--my as a 0-1 pointer
+   position). The glow and sheen are pure CSS on top of it. */
+/* The second selector is not redundant: .reveal.is-in sets `transform: none`,
+   and a card that has finished revealing still needs to be tiltable. .tilt is
+   only ever added after an element has revealed, so the two never overlap. */
+.tilt,
+.reveal.is-in.tilt {
+  transform-style: preserve-3d;
+  transform:
+    perspective(900px)
+    rotateX(var(--tx, 0deg))
+    rotateY(var(--ty, 0deg))
+    translateY(var(--lift, 0px))
+    scale(var(--tscale, 1));
+  transition: transform .5s var(--ease-out), box-shadow .5s var(--ease-out);
+}
+.tilt.is-tilting { transition: transform .12s linear, box-shadow .5s var(--ease-out); }
+
+/* Cursor-following highlight — reads as light catching a polished surface */
+.sheen { position: relative; }
+.sheen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .45s var(--ease);
+  background: radial-gradient(
+    340px circle at calc(var(--mx, .5) * 100%) calc(var(--my, .5) * 100%),
+    rgba(255, 255, 255, .22),
+    rgba(224, 193, 119, .10) 42%,
+    transparent 68%);
+}
+.sheen:hover::before,
+.sheen:focus-within::before { opacity: 1; }
+
+/* Gold hairline that draws itself around a card on hover */
+.edge-glow { position: relative; }
+.edge-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  pointer-events: none;
+  transition: border-color .45s var(--ease), box-shadow .45s var(--ease);
+}
+.edge-glow:hover::after,
+.edge-glow:focus-within::after {
+  border-color: rgba(224, 193, 119, .55);
+  box-shadow: inset 0 0 0 1px rgba(224, 193, 119, .16), 0 0 26px -8px rgba(194, 154, 60, .5);
+}
+
+.event-card { --lift: 0px; }
+.event-card:hover { --lift: -9px; box-shadow: var(--shadow-lg); }
+/* the tilt transform owns the element now, so the old translate is retired */
+.event-card.tilt:hover,
+.reveal.is-in.event-card.tilt:hover { transform:
+    perspective(900px) rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg))
+    translateY(var(--lift)) scale(var(--tscale, 1)); }
+
+.gal-item { --lift: 0px; }
+.gal-item:hover { --lift: -8px; }
+.gal-item.tilt:hover,
+.reveal.is-in.gal-item.tilt:hover { transform:
+    perspective(900px) rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg))
+    translateY(var(--lift)) scale(var(--tscale, 1)); }
+
+/* Feature tiles: icon springs, copy nudges, a gold rail grows on the left */
+.feature { position: relative; overflow: hidden; }
+.feature::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform .5s var(--ease-out);
+}
+.feature:hover::before { transform: scaleY(1); }
+.feature:hover { transform: translateY(-4px); }
+.feature .feature-ico { transition: background .35s var(--ease), transform .5s var(--ease-spring); }
+.feature:hover .feature-ico { transform: rotate(-6deg) scale(1.09); }
+.feature-t { transition: color .35s var(--ease), transform .45s var(--ease-out); }
+.feature:hover .feature-t { color: var(--maroon); transform: translateX(3px); }
+
+/* Chips and tick marks get a little life too */
+.chip { transition: transform .35s var(--ease-spring), background-color .3s var(--ease), border-color .3s var(--ease), color .3s var(--ease); }
+.chip:hover { transform: translateY(-3px); background: var(--maroon); border-color: var(--maroon); color: var(--gold-pale); }
+
+/* ---------- 22.4 Buttons: sheen sweep + magnetic pull ---------------- */
+.btn { position: relative; overflow: hidden; }
+.btn > * { position: relative; z-index: 1; }
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -60%;
+  width: 45%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .38), transparent);
+  transform: skewX(-18deg);
+  transition: left .65s var(--ease-out);
+}
+.btn:hover::after { left: 125%; }
+.btn-link::after { display: none; }
+
+/* Magnetic offset written by initMagnetic; folded into the existing lift */
+.btn.magnetic { transition: transform .35s var(--ease-out), box-shadow .28s var(--ease), background-color .28s var(--ease), color .28s var(--ease); }
+.btn.magnetic { transform: translate3d(var(--gx, 0px), calc(var(--gy, 0px) + var(--lift, 0px)), 0); }
+.btn.magnetic:hover { --lift: -2px; }
+.btn.magnetic.is-pulling { transition: transform .12s linear, box-shadow .28s var(--ease); }
+.btn.magnetic:active { --lift: 1px; --gx: 0px; --gy: 0px; }
+
+/* ---------- 22.5 Section furniture ----------------------------------- */
+.eyebrow-rule { transform-origin: left center; transition: transform .8s var(--ease-out) .15s; }
+.reveal:not(.is-in) .eyebrow-rule,
+.eyebrow.reveal:not(.is-in) .eyebrow-rule { transform: scaleX(0); }
+
+/* Reading-progress hairline under the header */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 100%;
+  z-index: 200;
+  transform: scaleX(var(--p, 0));
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--maroon), var(--gold), var(--gold-light));
+  pointer-events: none;
+}
+
+/* Stat numerals settle in place as they count */
+.stat-num { display: inline-block; transition: transform .6s var(--ease-spring); }
+.stat:hover .stat-num { transform: translateY(-3px) scale(1.04); }
+
+/* ---------- 22.6 Motion opt-out --------------------------------------
+   Reduced motion means no movement — but the content must still be visible,
+   so every hidden state is unwound here rather than merely sped up. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal[data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+  }
+  .word-rise > i { transform: none !important; opacity: 1 !important; }
+  img[data-fade] { opacity: 1 !important; filter: none !important; transform: none !important; }
+  .tilt { transform: none !important; }
+  .btn::after, .sheen::before { display: none; }
+  .scroll-progress { display: none; }
+  .eyebrow-rule { transform: none !important; }
 }
 
 .floating-wa {

@@ -713,12 +713,271 @@
     });
   }
 
+  /* ---------------------------------------------------------------
+     Media fit — a box shaped like its own picture
+     object-fit: cover only crops when the box and the file disagree, so
+     every media box is told the file's real ratio once it is known.
+     --------------------------------------------------------------- */
+  function initMediaFit() {
+    // selector -> which ancestor carries the aspect ratio
+    var TARGETS = [
+      ['.frame img',       '.frame'],
+      ['.event-media img', '.event-media'],
+      ['.gal-btn img',     '.gal-btn'],
+      ['.fac-media img',   '.frame']
+    ];
+
+    function apply(img, box) {
+      var w = img.naturalWidth, h = img.naturalHeight;
+      if (!w || !h || !box) return;
+      box.style.setProperty('--ar', w + ' / ' + h);
+      // keep the attributes honest so the browser reserves the right space
+      if (img.getAttribute('width') !== String(w)) {
+        img.setAttribute('width', w);
+        img.setAttribute('height', h);
+      }
+    }
+
+    TARGETS.forEach(function (pair) {
+      $$(pair[0]).forEach(function (img) {
+        var box = img.closest(pair[1]);
+        if (!box) return;
+        if (img.complete) apply(img, box);
+        else img.addEventListener('load', function () { apply(img, box); }, { once: true });
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     Blur-up — photos sharpen into place instead of snapping in
+     --------------------------------------------------------------- */
+  function initImageFade() {
+    if (reducedMotion.matches) return;
+
+    $$('.frame img, .event-media img, .gal-btn img').forEach(function (img) {
+      if (img.complete && img.naturalWidth) return;  // already painted, leave it
+      img.setAttribute('data-fade', '');
+      var done = function () { img.classList.add('is-loaded'); };
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
+      // never let a stalled request keep a photo invisible
+      window.setTimeout(done, 3000);
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     Reveal choreography — picks an entrance per element and staggers
+     siblings, so no markup needs to carry animation details
+     --------------------------------------------------------------- */
+  function initRevealChoreography() {
+    // photos get uncovered; text and cards move
+    $$('.reveal').forEach(function (el) {
+      if (el.hasAttribute('data-reveal')) return;
+      // .about-visual is deliberately excluded: its badge overhangs the box,
+      // and a clip-path would cut it off
+      if (el.matches('.frame, .fac-media')) el.setAttribute('data-reveal', 'mask');
+      else if (el.matches('.about-visual')) el.setAttribute('data-reveal', 'zoom');
+      // a split heading already animates word by word; moving the block too
+      // would double the motion
+      else if (el.querySelector('.word-rise')) el.setAttribute('data-reveal', 'fade');
+      else if (el.matches('.h2, .page-hero-title, .hero-title')) el.setAttribute('data-reveal', 'rise');
+      else if (el.matches('.eyebrow, .section-sub, .lede')) el.setAttribute('data-reveal', 'fade');
+      else el.setAttribute('data-reveal', 'up');
+    });
+
+    // grid children come in one after another, left to right
+    var GRIDS = ['.event-grid', '.feature-grid', '.gallery', '.stats-grid', '.chip-row'];
+    GRIDS.forEach(function (sel) {
+      $$(sel).forEach(function (grid) {
+        Array.prototype.forEach.call(grid.children, function (child, i) {
+          if (child.getAttribute('data-delay')) return;
+          child.style.setProperty('--d', Math.min(i, 7));
+        });
+      });
+    });
+
+    // Gallery tiles carry no .reveal in the markup — give them one so the grid
+    // assembles itself tile by tile. Tiles inside the stack container are left
+    // alone: GSAP drives their transform and opacity there.
+    $$('.gallery .gal-item').forEach(function (item) {
+      if (item.classList.contains('reveal')) return;
+      if (item.closest('.gallery-stack-container')) return;
+      item.classList.add('reveal');
+      item.setAttribute('data-reveal', 'zoom');
+    });
+
+    // alternating rows slide in from the side they sit on
+    $$('.fac-row').forEach(function (row) {
+      var media = $('.fac-media', row);
+      var body  = $('.fac-body', row);
+      var rev   = row.classList.contains('fac-row-rev');
+      if (media && !media.hasAttribute('data-reveal')) media.classList.add('reveal');
+      if (body && !body.classList.contains('reveal')) {
+        body.classList.add('reveal');
+        body.setAttribute('data-reveal', rev ? 'left' : 'right');
+        body.style.setProperty('--d', 1);
+      }
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     Split headings — words lift in sequence out of a clipped line
+     --------------------------------------------------------------- */
+  function initSplitHeadings() {
+    if (reducedMotion.matches) return;
+
+    $$('.section-head .h2, .page-hero-title').forEach(function (h) {
+      if (h.querySelector('.word-rise')) return;
+      // only plain-text headings; anything with markup is left alone
+      if (h.children.length) return;
+
+      var words = h.textContent.trim().split(/\s+/);
+      if (!words.length || words.length > 14) return;
+
+      h.textContent = '';
+      words.forEach(function (word, i) {
+        var span = document.createElement('span');
+        span.className = 'word-rise';
+        var inner = document.createElement('i');
+        inner.textContent = word;
+        span.style.setProperty('--w', i);
+        span.appendChild(inner);
+        h.appendChild(span);
+        if (i < words.length - 1) h.appendChild(document.createTextNode(' '));
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     Card craft — pointer tilt, cursor sheen, gold edge
+     Pointer-driven, so it is skipped on touch and for reduced motion.
+     --------------------------------------------------------------- */
+  function initCardMotion() {
+    var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+    $$('.event-card, .gal-item, .feature, .contact-card, .reach-card').forEach(function (card) {
+      // the sheen would sit over the caption on event cards, so those get
+      // the gold edge only
+      if (card.matches('.event-card')) card.classList.add('edge-glow');
+      else card.classList.add('sheen', 'edge-glow');
+    });
+
+    if (reducedMotion.matches || !fine.matches) return;
+
+    var MAX = 5;  // degrees — past this it stops reading as a photograph
+    $$('.event-card, .gal-item, .contact-card, .reach-card').forEach(function (card) {
+      // GSAP owns the transform of stacked gallery cards
+      if (card.closest('.gallery-stack-container')) return;
+
+      var frame = 0;
+      function track(e) {
+        if (frame) return;
+        frame = window.requestAnimationFrame(function () {
+          frame = 0;
+          var r = card.getBoundingClientRect();
+          var mx = (e.clientX - r.left) / r.width;
+          var my = (e.clientY - r.top) / r.height;
+          card.style.setProperty('--mx', mx.toFixed(3));
+          card.style.setProperty('--my', my.toFixed(3));
+          card.style.setProperty('--ty', ((mx - 0.5) * 2 * MAX).toFixed(2) + 'deg');
+          card.style.setProperty('--tx', ((0.5 - my) * 2 * MAX).toFixed(2) + 'deg');
+        });
+      }
+
+      card.addEventListener('pointerenter', function () {
+        // .tilt is added on first hover rather than up front: the scroll
+        // reveal owns this element's transform until it has landed, and by
+        // the time a pointer reaches the card it always has
+        card.classList.add('tilt', 'is-tilting');
+        card.style.setProperty('--tscale', '1.012');
+      });
+      card.addEventListener('pointermove', track);
+      card.addEventListener('pointerleave', function () {
+        if (frame) { window.cancelAnimationFrame(frame); frame = 0; }
+        card.classList.remove('is-tilting');
+        card.style.setProperty('--tx', '0deg');
+        card.style.setProperty('--ty', '0deg');
+        card.style.setProperty('--tscale', '1');
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     Magnetic buttons — the button leans toward the cursor
+     --------------------------------------------------------------- */
+  function initMagnetic() {
+    var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+    if (reducedMotion.matches || !fine.matches) return;
+
+    var PULL = 0.28;  // fraction of the offset from centre
+
+    $$('.btn-gold, .btn-maroon, .btn-lg, .nav-cta').forEach(function (btn) {
+      if (btn.classList.contains('btn-link')) return;
+      btn.classList.add('magnetic');
+
+      var frame = 0;
+      btn.addEventListener('pointermove', function (e) {
+        if (frame) return;
+        frame = window.requestAnimationFrame(function () {
+          frame = 0;
+          var r = btn.getBoundingClientRect();
+          btn.classList.add('is-pulling');
+          btn.style.setProperty('--gx', ((e.clientX - r.left - r.width / 2) * PULL).toFixed(1) + 'px');
+          btn.style.setProperty('--gy', ((e.clientY - r.top - r.height / 2) * PULL).toFixed(1) + 'px');
+        });
+      });
+      btn.addEventListener('pointerleave', function () {
+        if (frame) { window.cancelAnimationFrame(frame); frame = 0; }
+        btn.classList.remove('is-pulling');
+        btn.style.setProperty('--gx', '0px');
+        btn.style.setProperty('--gy', '0px');
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     Reading progress hairline
+     --------------------------------------------------------------- */
+  function initScrollProgress() {
+    if (reducedMotion.matches) return;
+
+    var bar = document.createElement('div');
+    bar.className = 'scroll-progress';
+    bar.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(bar);
+
+    var ticking = false;
+    function apply() {
+      ticking = false;
+      var doc = document.documentElement;
+      var max = doc.scrollHeight - window.innerHeight;
+      bar.style.setProperty('--p', max > 0 ? Math.min(window.scrollY / max, 1).toFixed(4) : 0);
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(apply); }
+    }, { passive: true });
+    window.addEventListener('resize', apply);
+    apply();
+  }
+
   /* --------------------------------------------------------------- */
   function boot() {
     initStickyHeader();
     initMobileNav();
+
+    // motion setup runs before initReveal: it adds .reveal elements and
+    // rewrites headings that the observer then picks up
+    initMediaFit();
+    initImageFade();
+    initSplitHeadings();
+    initRevealChoreography();
+
     initReveal();
     initCounters();
+
+    initCardMotion();
+    initMagnetic();
+    initScrollProgress();
 
     initTourVideo();
     initGalleryFilter();
