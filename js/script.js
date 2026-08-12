@@ -902,38 +902,6 @@
     });
   }
 
-  /* ---------------------------------------------------------------
-     Magnetic buttons — the button leans toward the cursor
-     --------------------------------------------------------------- */
-  function initMagnetic() {
-    var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
-    if (reducedMotion.matches || !fine.matches) return;
-
-    var PULL = 0.28;  // fraction of the offset from centre
-
-    $$('.btn-gold, .btn-maroon, .btn-lg, .nav-cta').forEach(function (btn) {
-      if (btn.classList.contains('btn-link')) return;
-      btn.classList.add('magnetic');
-
-      var frame = 0;
-      btn.addEventListener('pointermove', function (e) {
-        if (frame) return;
-        frame = window.requestAnimationFrame(function () {
-          frame = 0;
-          var r = btn.getBoundingClientRect();
-          btn.classList.add('is-pulling');
-          btn.style.setProperty('--gx', ((e.clientX - r.left - r.width / 2) * PULL).toFixed(1) + 'px');
-          btn.style.setProperty('--gy', ((e.clientY - r.top - r.height / 2) * PULL).toFixed(1) + 'px');
-        });
-      });
-      btn.addEventListener('pointerleave', function () {
-        if (frame) { window.cancelAnimationFrame(frame); frame = 0; }
-        btn.classList.remove('is-pulling');
-        btn.style.setProperty('--gx', '0px');
-        btn.style.setProperty('--gy', '0px');
-      });
-    });
-  }
 
   /* ---------------------------------------------------------------
      Reading progress hairline
@@ -976,7 +944,6 @@
     initCounters();
 
     initCardMotion();
-    initMagnetic();
     initScrollProgress();
 
     initTourVideo();

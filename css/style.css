@@ -153,10 +153,17 @@ button { font: inherit; color: inherit; }
 .section-head .eyebrow { justify-content: center; }
 .eyebrow-light { color: var(--gold-light); }
 
-/* ---------- 4. Buttons ---------- */
+/* ---------- 4. Buttons (Liquid Fill Effect) ---------- */
 .btn {
-  --btn-bg: var(--maroon);
+  --liquid-button-fill-width: -1%;
+  --liquid-button-fill-height: 3px;
+  --liquid-button-delay: 0s;
+  --liquid-button-color: var(--maroon-deep);
+  --liquid-button-background-color: var(--maroon);
   --btn-fg: #fff;
+
+  position: relative;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -164,7 +171,6 @@ button { font: inherit; color: inherit; }
   padding: .82rem 1.6rem;
   border: 1px solid transparent;
   border-radius: 999px;
-  background: var(--btn-bg);
   color: var(--btn-fg);
   font-size: .92rem;
   font-weight: 500;
@@ -172,12 +178,32 @@ button { font: inherit; color: inherit; }
   text-transform: uppercase;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform .28s var(--ease), box-shadow .28s var(--ease),
-              background-color .28s var(--ease), color .28s var(--ease),
-              border-color .28s var(--ease);
+  
+  background:
+    linear-gradient(var(--liquid-button-color) 0 0) no-repeat calc(200% - var(--liquid-button-fill-width, -1%)) 100% / 200% var(--liquid-button-fill-height, 0.2em);
+  background-color: var(--liquid-button-background-color);
+  transition: background 0.35s var(--liquid-button-delay, 0s),
+              color 0.35s 0.35s,
+              background-position 0.35s calc(0.35s - var(--liquid-button-delay, 0s)),
+              transform 0.2s var(--ease),
+              box-shadow 0.28s var(--ease),
+              border-color 0.28s var(--ease);
 }
-.btn:hover  { transform: translateY(-2px); box-shadow: var(--shadow); color: var(--btn-fg); }
-.btn:active { transform: translateY(0); }
+
+.btn > * { position: relative; z-index: 1; }
+
+.btn:hover {
+  --liquid-button-fill-width: 100%;
+  --liquid-button-fill-height: 100%;
+  --liquid-button-delay: 0.35s;
+  transform: scale(1.05);
+  box-shadow: var(--shadow-lg);
+  color: var(--btn-hover-fg, #fff);
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
 
 .btn-lg    { padding: 1rem 2rem; font-size: .95rem; }
 .btn-block { width: 100%; }
@@ -186,50 +212,71 @@ button { font: inherit; color: inherit; }
 
 .btn-gold {
   --btn-fg: var(--maroon-deep);
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  --btn-hover-fg: #fff;
+  --liquid-button-color: var(--maroon-deep);
+  --liquid-button-background-color: var(--gold);
   box-shadow: 0 8px 22px -10px rgba(194, 154, 60, .8);
 }
-.btn-gold:hover { background: linear-gradient(135deg, #EBD096, var(--gold-light)); }
 
-.btn-maroon { --btn-bg: var(--maroon); }
-.btn-maroon:hover { --btn-bg: var(--maroon-deep); }
+.btn-maroon {
+  --btn-fg: #fff;
+  --btn-hover-fg: var(--maroon-deep);
+  --liquid-button-color: var(--gold-light);
+  --liquid-button-background-color: var(--maroon);
+}
 
-.btn-whatsapp { --btn-bg: var(--wa); }
-.btn-whatsapp:hover { --btn-bg: var(--wa-dark); }
+.btn-whatsapp {
+  --btn-fg: #fff;
+  --btn-hover-fg: #fff;
+  --liquid-button-color: var(--wa-dark);
+  --liquid-button-background-color: var(--wa);
+}
 
 .btn-ghost {
-  background: rgba(255, 255, 255, 0.05);
+  --btn-fg: #fff;
+  --btn-hover-fg: #fff;
+  --liquid-button-color: rgba(255, 255, 255, 0.2);
+  --liquid-button-background-color: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #fff;
-}
-.btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
 }
 
 .btn-outline {
-  background: transparent;
+  --btn-fg: #fff;
+  --btn-hover-fg: #fff;
+  --liquid-button-color: var(--maroon);
+  --liquid-button-background-color: transparent;
   border-color: rgba(255, 255, 255, .55);
-  color: #fff;
   backdrop-filter: blur(4px);
 }
-.btn-outline:hover { background: rgba(255, 255, 255, .14); border-color: #fff; color: #fff; }
+.btn-outline:hover {
+  border-color: var(--gold);
+}
 
 .btn-outline-dark {
-  background: transparent;
+  --btn-fg: var(--charcoal);
+  --btn-hover-fg: #fff;
+  --liquid-button-color: var(--maroon);
+  --liquid-button-background-color: transparent;
   border-color: var(--line);
-  color: var(--charcoal);
 }
-.btn-outline-dark:hover { background: var(--charcoal); border-color: var(--charcoal); color: #fff; }
+.btn-outline-dark:hover {
+  border-color: var(--maroon);
+}
 
 .btn-link {
-  background: transparent;
+  background: transparent !important;
   color: var(--maroon);
   padding-inline: 0;
+  border: none;
+  box-shadow: none;
 }
-.btn-link:hover { color: var(--maroon-soft); box-shadow: none; transform: none; }
+.btn-link:hover {
+  color: var(--maroon-soft);
+  transform: none;
+  box-shadow: none;
+}
 .btn-link .ico { transition: transform .28s var(--ease); }
 .btn-link:hover .ico { transform: translateX(4px); }
 
@@ -2035,30 +2082,7 @@ img[data-fade].is-loaded {
 .chip { transition: transform .35s var(--ease-spring), background-color .3s var(--ease), border-color .3s var(--ease), color .3s var(--ease); }
 .chip:hover { transform: translateY(-3px); background: var(--maroon); border-color: var(--maroon); color: var(--gold-pale); }
 
-/* ---------- 22.4 Buttons: sheen sweep + magnetic pull ---------------- */
-.btn { position: relative; overflow: hidden; }
-.btn > * { position: relative; z-index: 1; }
-.btn::after {
-  content: '';
-  position: absolute;
-  top: 0; bottom: 0;
-  left: -60%;
-  width: 45%;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .38), transparent);
-  transform: skewX(-18deg);
-  transition: left .65s var(--ease-out);
-}
-.btn:hover::after { left: 125%; }
-.btn-link::after { display: none; }
-
-/* Magnetic offset written by initMagnetic; folded into the existing lift */
-.btn.magnetic { transition: transform .35s var(--ease-out), box-shadow .28s var(--ease), background-color .28s var(--ease), color .28s var(--ease); }
-.btn.magnetic { transform: translate3d(var(--gx, 0px), calc(var(--gy, 0px) + var(--lift, 0px)), 0); }
-.btn.magnetic:hover { --lift: -2px; }
-.btn.magnetic.is-pulling { transition: transform .12s linear, box-shadow .28s var(--ease); }
-.btn.magnetic:active { --lift: 1px; --gx: 0px; --gy: 0px; }
+/* ---------- 22.4 Buttons: liquid fill animation ---------------- */
 
 /* ---------- 22.5 Section furniture ----------------------------------- */
 .eyebrow-rule { transform-origin: left center; transition: transform .8s var(--ease-out) .15s; }
