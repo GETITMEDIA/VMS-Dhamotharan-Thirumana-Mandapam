@@ -1,6 +1,6 @@
-/* =====================================================================
+﻿/* =====================================================================
    VMS Dhamotharan Thirumana Mandapam
-   Stylesheet — design tokens, layout, components, responsive
+   Stylesheet ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â design tokens, layout, components, responsive
    ===================================================================== */
 
 /* ---------- 1. Tokens ---------- */
@@ -1503,7 +1503,7 @@ a.contact-v { font-size: 1.15rem; font-weight: 500; color: var(--maroon); }
 
 /* ---------- 19. Lightbox ---------- */
 /* When the lightbox carries the HTML `hidden` attribute, ensure it truly
-   disappears — `display:grid` on `.lightbox` would otherwise override the
+   disappears ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â `display:grid` on `.lightbox` would otherwise override the
    browser's built-in `[hidden]{display:none}` rule. */
 .lightbox[hidden] { display: none !important; }
 
@@ -1814,4 +1814,48 @@ body.is-locked { overflow: hidden; }
   .site-header, .dock, .to-top, .hero-scroll, .video-sec, .map-wrap, .lightbox { display: none !important; }
   body { background: #fff; color: #000; padding: 0; }
   .hero { min-height: auto; }
+}
+
+@keyframes waBlink {
+  0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+  70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+.floating-wa {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  position: fixed;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 90;
+  width: 56px; height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #25D366;
+  color: white;
+  transition: transform .3s ease;
+  animation: waBlink 2s infinite;
+}
+.floating-wa.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.floating-wa:hover {
+  transform: translateY(-3px);
+  animation: none;
+}
+.floating-wa svg {
+  width: 32px; height: 32px; fill: currentColor;
+}
+@media (max-width: 768px) {
+  .floating-wa {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+    bottom: calc(62px + env(safe-area-inset-bottom) + 1rem);
+  }
 }

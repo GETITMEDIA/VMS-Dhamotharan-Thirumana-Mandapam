@@ -522,7 +522,7 @@
      Back to top
      --------------------------------------------------------------- */
   function initBackToTop() {
-    var btn = $('#toTop');
+    var btn = document.querySelector('.floating-wa');
     if (!btn) return;
 
     var ticking = false;
@@ -535,13 +535,6 @@
     window.addEventListener('scroll', function () {
       if (!ticking) { ticking = true; window.requestAnimationFrame(apply); }
     }, { passive: true });
-
-    btn.addEventListener('click', function () {
-      window.scrollTo({
-        top: 0,
-        behavior: reducedMotion.matches ? 'auto' : 'smooth'
-      });
-    });
     apply();
   }
 
