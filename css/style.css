@@ -1097,10 +1097,15 @@ button { font: inherit; color: inherit; }
 
 .gal-empty { text-align: center; color: var(--muted); margin-top: 2rem; }
 
-/* 3D Grid-to-Stack Morph Gallery */
+/* 3D Grid-to-Stack Morph Gallery
+   Height is driven from JS (initGalleryStack): tight around the collapsed
+   deck at rest, expanded to the full grid on hover. overflow keeps the
+   off-screen rows of the un-hovered grid from poking past that height. */
 .gallery-stack-container {
   position: relative;
   width: 100%;
+  height: 260px;
+  overflow: hidden;
   margin-block: 2.2rem;
   touch-action: pan-y;
 }

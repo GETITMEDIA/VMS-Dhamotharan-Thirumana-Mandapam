@@ -556,7 +556,8 @@
 
     var cards = $$('.gal-item', container);
     var isStacked = true;
-    
+    var collapseTimer = null;
+
     // Check if gsap is loaded, if not wait a bit
     if (typeof gsap === 'undefined') {
       setTimeout(initGalleryStack, 100);
@@ -567,14 +568,39 @@
       return window.innerWidth <= 768;
     }
 
-    function getLayoutOffsets() {
+    // The grid keeps its full multi-row layout at all times — GSAP only
+    // moves cards visually with transforms, it never changes document flow.
+    // That means container.scrollHeight is a stable read of "every row laid
+    // out" regardless of whether the deck is currently stacked or fanned.
+    function naturalHeight() {
+      return container.scrollHeight;
+    }
+
+    // How tall the wrapper needs to be to show the fanned-out deck without
+    // clipping the widest card, plus headroom for the +/-6deg rotation.
+    function stackedHeight() {
+      var tallest = 0;
+      cards.forEach(function (card) { tallest = Math.max(tallest, card.offsetHeight); });
+      return tallest + 56;
+    }
+
+    // Height is always snapped instantly, never tweened: animating `height`
+    // forces a synchronous layout recalculation on every single frame, and
+    // doing that alongside ten cards animating was the source of the lag.
+    // Growing the window happens up front so nothing is clipped mid-flight;
+    // shrinking it happens only after the cards have actually landed.
+    function setWrapperHeight(px) {
+      if (!wrapper) return;
+      wrapper.style.height = px + 'px';
+    }
+
+    function getLayoutOffsets(targetHeight) {
       // Temporarily clear all transforms to get actual layout positions
       cards.forEach(function (card) {
         gsap.set(card, { x: 0, y: 0, rotate: 0, scale: 1 });
       });
 
       var containerWidth = container.clientWidth;
-      var containerHeight = container.clientHeight;
 
       return cards.map(function (card) {
         var cardWidth = card.offsetWidth;
@@ -584,7 +610,10 @@
 
         // Calculate offset to bring the card to the exact center of the container
         var offsetX = (containerWidth / 2) - (cardWidth / 2) - cardLeft;
-        var offsetY = (containerHeight / 2) - (cardHeight / 2) - cardTop;
+        // Centre on the collapsed deck's own height, not the full multi-row
+        // grid — otherwise the cards land in the middle of space the
+        // wrapper no longer reserves, and the deck sits off-window.
+        var offsetY = (targetHeight / 2) - (cardHeight / 2) - cardTop;
 
         return {
           x: offsetX,
@@ -598,17 +627,28 @@
         resetCards(false);
         return;
       }
-      
+
       isStacked = true;
-      var offsets = getLayoutOffsets();
+      clearTimeout(collapseTimer);
+
+      var targetHeight = stackedHeight();
+      var offsets = getLayoutOffsets(targetHeight);
+
+      if (!animate) {
+        // Instant (page load, resize): no flight to clip mid-way, so the
+        // deck height can be applied immediately.
+        setWrapperHeight(targetHeight);
+      }
+      // else: the window stays at its current (expanded) size while the
+      // cards fly in, and is clipped down once they arrive — see below.
 
       cards.forEach(function (card, i) {
         gsap.killTweensOf(card);
         var offset = offsets[i];
-        
+
         // Random slight rotation
         var randomRot = (Math.random() * 12) - 6; // between -6deg and 6deg
-        
+
         // Progressive scale for "small to big" look in stack (top cards are bigger, bottom smaller)
         var stackScale = 0.86 + ((cards.length - 1 - i) / cards.length) * 0.08;
 
@@ -633,13 +673,29 @@
           });
         }
       });
+
+      if (animate) {
+        collapseTimer = setTimeout(function () { setWrapperHeight(targetHeight); }, 850);
+      }
     }
 
     function resetCards(animate) {
       isStacked = false;
+      clearTimeout(collapseTimer);
       cards.forEach(function (card) {
         gsap.killTweensOf(card);
       });
+
+      if (isMobile()) {
+        // Mobile never stacks — let the grid sit at its natural CSS height
+        // rather than a JS-measured pixel value, so it keeps reflowing
+        // correctly across rotation and resize.
+        if (wrapper) wrapper.style.height = '';
+      } else {
+        // Expand before the cards start moving out, so none of them are
+        // clipped as they travel back to their natural grid positions.
+        setWrapperHeight(naturalHeight());
+      }
 
       if (animate === false || isMobile()) {
         gsap.set(cards, {
