@@ -75,6 +75,28 @@
     var onChange = function (e) { if (e.matches) setOpen(false); };
     if (wide.addEventListener) wide.addEventListener('change', onChange);
     else if (wide.addListener) wide.addListener(onChange);
+
+    // Add dropdown toggles for mobile
+    var dropdowns = $$('.has-dropdown', nav);
+    dropdowns.forEach(function (li) {
+      var link = li.querySelector('a');
+      if (!link) return;
+      var btn = document.createElement('button');
+      btn.className = 'dropdown-toggle-btn';
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Toggle dropdown');
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>';
+      
+      link.parentNode.insertBefore(btn, link.nextSibling);
+      
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var isExpanded = li.classList.contains('is-expanded');
+        li.classList.toggle('is-expanded', !isExpanded);
+        btn.setAttribute('aria-expanded', !isExpanded);
+      });
+    });
   }
 
   /* ---------------------------------------------------------------
