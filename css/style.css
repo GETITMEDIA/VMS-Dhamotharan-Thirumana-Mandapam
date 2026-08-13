@@ -38,7 +38,7 @@
   --shadow:    0 14px 38px -14px rgba(28, 23, 20, .22);
   --shadow-lg: 0 30px 70px -28px rgba(28, 23, 20, .40);
 
-  --nav-h: 84px;
+  --nav-h: 100px;
   --ease: cubic-bezier(.22, .61, .36, 1);
 }
 
@@ -46,6 +46,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
+  overflow-x: hidden;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-h) + 12px);
   -webkit-text-size-adjust: 100%;
@@ -303,7 +304,7 @@ button { font: inherit; color: inherit; }
   pointer-events: none;
 }
 .site-header.is-stuck {
-  --nav-h: 66px;
+  --nav-h: 90px;
   background: rgba(251, 247, 240, .88);
   backdrop-filter: saturate(140%) blur(14px);
   box-shadow: 0 1px 0 var(--line), 0 10px 30px -18px rgba(28, 23, 20, .5);
@@ -320,18 +321,18 @@ button { font: inherit; color: inherit; }
 }
 
 .brand { display: inline-flex; align-items: center; gap: .8rem; color: #fff; }
-.brand-mark { width: 40px; height: 40px; flex: none; }
-.brand-mark svg { width: 100%; height: 100%; }
-.bm-shield { fill: none; stroke: var(--gold); stroke-width: 1.6; }
-.bm-text {
-  font-family: var(--serif);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .06em;
-  fill: var(--gold);
+.brand-mark { display: flex; align-items: center; justify-content: center; flex: none; }
+.brand-logo-img {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
 }
-.site-header.is-stuck .bm-shield { stroke: var(--maroon); }
-.site-header.is-stuck .bm-text  { fill: var(--maroon); }
+.brand-logo-footer {
+  width: 80px;
+  height: 80px;
+}
+.bm-shield { fill: none; stroke: var(--gold); }
+.bm-text { fill: var(--gold); font-family: var(--serif); font-size: 14px; font-weight: 800; }
 
 .brand-words { display: flex; flex-direction: column; line-height: 1.15; }
 .brand-name {
@@ -1561,9 +1562,7 @@ a.contact-v { font-size: 1.15rem; font-weight: 500; color: var(--maroon); }
   gap: clamp(1.8rem, 3.5vw, 3rem);
   padding-bottom: clamp(2.4rem, 5vw, 3.6rem);
 }
-.brand-mark-lg { width: 52px; height: 52px; display: block; margin-bottom: 1rem; }
-.brand-mark-lg .bm-shield { stroke: var(--gold); }
-.brand-mark-lg .bm-text { fill: var(--gold); }
+.brand-mark-lg { display: inline-block; margin-bottom: 1rem; max-width: 100%; }
 
 .footer-name {
   font-family: var(--serif);
@@ -1581,7 +1580,7 @@ a.contact-v { font-size: 1.15rem; font-weight: 500; color: var(--maroon); }
   color: var(--gold);
   margin-top: .3rem;
 }
-.footer-desc { font-size: .9rem; line-height: 1.7; max-width: 30ch; }
+.footer-desc { font-size: .9rem; line-height: 1.7; max-width: 30ch; margin-top: 1rem; }
 
 .footer-h {
   font-family: var(--sans);
@@ -1596,8 +1595,29 @@ a.contact-v { font-size: 1.15rem; font-weight: 500; color: var(--maroon); }
 .footer-col a { color: rgba(255, 255, 255, .62); transition: color .25s var(--ease), padding-left .25s var(--ease); }
 .footer-col a:hover { color: var(--gold-light); padding-left: 4px; }
 
-.footer-contact a { font-weight: 500; color: rgba(255, 255, 255, .82); }
-.footer-addr { margin-top: 1.1rem; font-size: .86rem; line-height: 1.65; color: rgba(255, 255, 255, .5); }
+.footer-contact li { display: flex; align-items: center; gap: 0.6rem; }
+.footer-contact a { font-weight: 500; color: rgba(255, 255, 255, .82); display: block; }
+.fc-icon { width: 18px; height: 18px; flex: none; fill: var(--gold-light); }
+.footer-addr {
+  margin-top: 1.1rem;
+  font-size: .86rem;
+  line-height: 1.65;
+  color: #fff;
+  display: flex;
+  align-items: flex-start;
+  gap: .7rem;
+}
+.footer-addr .fc-icon {
+  margin-top: .2rem;
+  flex: none;
+}
+.footer-addr a {
+  color: inherit;
+  transition: color .3s var(--ease);
+}
+.footer-addr a:hover {
+  color: var(--gold);
+}
 
 .footer-bottom {
   display: flex;
@@ -1733,6 +1753,10 @@ body.is-locked { overflow: hidden; }
 @media (max-width: 1080px) {
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .footer-brand { grid-column: 1 / -1; }
+}
+
+@media (max-width: 600px) {
+  .footer-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* --- tablet / mobile nav --- */
@@ -1928,6 +1952,10 @@ body.is-locked { overflow: hidden; }
 }
 
 @media (max-width: 480px) {
+  .site-header { --nav-h: 70px; }
+  .site-header.is-stuck { --nav-h: 60px; }
+  .brand-logo-img { width: 56px; height: 56px; }
+  .brand-name { font-size: 1rem; }
   .btn { padding: .78rem 1.15rem; font-size: .82rem; letter-spacing: .04em; }
   .btn-lg { padding: .9rem 1.3rem; font-size: .85rem; }
 
