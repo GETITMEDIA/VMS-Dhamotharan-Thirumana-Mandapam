@@ -24,7 +24,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="image" href="assets/images/optimized/hero-wide-2400.webp" fetchpriority="high">
+<link rel="preload" as="image" href="assets/images/optimized/hero-distanced.png" fetchpriority="high">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Noto+Sans+Tamil:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=5">
 
@@ -110,20 +110,18 @@
 <!-- ============ HERO ============ -->
 <section class="hero" id="home">
   <div class="hero-media">
-    <picture>
-      <!-- Desktop uses a widened frame (the night sky extended to either side)
-           so the whole facade fits any window without letterbox bars.
-           Phones keep the true 3:2 original for the stacked layout. -->
+    <!-- Intrinsic size must match the file (1536x1024, 3:2). A wrong ratio here
+         makes the browser reserve the wrong box and shifts the crop. -->
       <img
-        src="assets/images/optimized/hero-wide-2400.webp"
+        src="assets/images/optimized/hero-distanced.png"
         width="2400" height="1598"
         alt="VMS Dhamotharan Thirumana Mandapam lit with golden festoon lights at night"
         fetchpriority="high" decoding="async" class="hero-img">
-    </picture>
     <div class="hero-veil" aria-hidden="true"></div>
   </div>
 
   <div class="shell hero-inner">
+   <div class="hero-copy">
     <p class="eyebrow reveal">
       <span class="eyebrow-rule" aria-hidden="true"></span>
       Near Pondicherry &nbsp;•&nbsp; Dindivanam Bypass Road
@@ -143,6 +141,7 @@
       <a href="enquiry.html" class="btn btn-gold btn-lg">Enquire Now &rarr;</a>
       <a href="gallery.html" class="btn btn-ghost btn-lg">Explore Gallery</a>
     </div>
+   </div>
   </div>
 
   <a href="#stats" class="hero-scroll" aria-label="Scroll to highlights">
