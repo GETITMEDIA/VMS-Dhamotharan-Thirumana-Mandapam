@@ -155,7 +155,7 @@ button { font: inherit; color: inherit; }
 
 /* ---------- 4. Buttons (Liquid Fill Effect) ---------- */
 .btn {
-  --liquid-button-fill-width: -1%;
+  --liquid-button-fill-width: -5%;
   --liquid-button-fill-height: 3px;
   --liquid-button-delay: 0s;
   --liquid-button-color: var(--maroon-deep);
@@ -180,7 +180,7 @@ button { font: inherit; color: inherit; }
   white-space: nowrap;
   
   background:
-    linear-gradient(var(--liquid-button-color) 0 0) no-repeat calc(200% - var(--liquid-button-fill-width, -1%)) 100% / 200% var(--liquid-button-fill-height, 0.2em);
+    linear-gradient(var(--liquid-button-color) 0 0) no-repeat calc(200% - var(--liquid-button-fill-width, -5%)) 100% / 250% var(--liquid-button-fill-height, 0.2em);
   background-color: var(--liquid-button-background-color);
   transition: background 0.35s var(--liquid-button-delay, 0s),
               color 0.35s 0.35s,
@@ -199,6 +199,7 @@ button { font: inherit; color: inherit; }
   transform: scale(1.05);
   box-shadow: var(--shadow-lg);
   color: var(--btn-hover-fg, #fff);
+  border-color: var(--liquid-button-color);
 }
 
 .btn:active {
@@ -380,7 +381,30 @@ button { font: inherit; color: inherit; }
 .site-header.is-stuck .nav-link:hover,
 .site-header.is-stuck .nav-link.is-active { color: var(--maroon); }
 
-.has-dropdown { position: relative; }
+.has-dropdown { position: relative; display: flex; align-items: center; }
+.dropdown-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 2px;
+  cursor: pointer;
+  color: inherit;
+}
+.dropdown-toggle-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  transition: transform .3s var(--ease);
+}
+.site-header .dropdown-toggle-btn { color: #fff; }
+.site-header.is-stuck .dropdown-toggle-btn { color: var(--ink); }
+.has-dropdown:hover .dropdown-toggle-btn svg,
+.has-dropdown:focus-within .dropdown-toggle-btn svg {
+  transform: rotate(180deg);
+}
 .has-dropdown::after {
   content: '';
   position: absolute;
@@ -400,7 +424,7 @@ button { font: inherit; color: inherit; }
   min-width: 220px;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: opacity .3s var(--ease-out), transform .3s var(--ease-out), visibility .3s var(--ease-out);
   display: flex;
   flex-direction: column;
   z-index: 110;
@@ -438,8 +462,11 @@ button { font: inherit; color: inherit; }
   border: 1px solid rgba(255, 255, 255, .35);
   border-radius: 10px;
   cursor: pointer;
+  position: relative;
+  z-index: 100;
 }
 .site-header.is-stuck .nav-toggle { border-color: var(--line); }
+.nav-toggle[aria-expanded="true"] { border-color: var(--charcoal); }
 
 .nav-toggle-bars { display: block; width: 20px; height: 14px; position: relative; }
 .nav-toggle-bars i {
@@ -450,6 +477,7 @@ button { font: inherit; color: inherit; }
   border-radius: 2px;
   transition: transform .3s var(--ease), opacity .2s var(--ease), background-color .3s var(--ease);
 }
+.nav-toggle[aria-expanded="true"] .nav-toggle-bars i { background: var(--charcoal); }
 .nav-toggle-bars i:nth-child(1) { top: 0; }
 .nav-toggle-bars i:nth-child(2) { top: 6.25px; }
 .nav-toggle-bars i:nth-child(3) { top: 12.5px; }
@@ -511,12 +539,17 @@ button { font: inherit; color: inherit; }
 .hero-veil {
   position: absolute;
   inset: 0;
-  /* Layered so the mandapam itself stays bright: a soft pool only behind the
+  /* Layered so the mandapam itself stays bright: a pool only behind the
      headline, plus thin bands at the very top and bottom for the navbar and
-     the section join. Deliberately not an all-over wash. */
+     the section join. Deliberately not an all-over wash.
+     The pool is weighted heavily because the copy lands on the lit gold
+     facade — the previous .54 centre left white-on-gold well under 4.5:1.
+     It still falls to fully transparent by the edges, so the roofline,
+     the entrance and the palms stay at full brightness. */
   background:
-    radial-gradient(62% 44% at 50% 50%,
-      rgba(10, 6, 5, .54) 0%, rgba(10, 6, 5, .26) 58%, rgba(10, 6, 5, 0) 100%),
+    radial-gradient(96% 62% at 50% 47%,
+      rgba(10, 6, 5, .74) 0%, rgba(10, 6, 5, .60) 42%,
+      rgba(10, 6, 5, .30) 70%, rgba(10, 6, 5, 0) 100%),
     linear-gradient(180deg,
       rgba(10, 6, 5, .70) 0%, rgba(10, 6, 5, .12) 24%, rgba(10, 6, 5, 0) 40%),
     linear-gradient(0deg,
@@ -525,7 +558,9 @@ button { font: inherit; color: inherit; }
 .hero-inner { position: relative; text-align: center; }
 
 .hero .eyebrow {
-  color: var(--gold-light);
+  /* gold-pale rather than gold-light: at 12.5px this is small text and needs
+     4.5:1, which gold-light missed against the lit facade. */
+  color: var(--gold-pale);
   justify-content: center;
   text-shadow: 0 1px 12px rgba(0, 0, 0, .5);
 }
@@ -545,7 +580,9 @@ button { font: inherit; color: inherit; }
   font-size: clamp(2.2rem, 4vw, 4.5rem);
   font-weight: 600;
   line-height: 1.1;
-  color: var(--gold);
+  /* gold-light, not gold: the darker gold sat at ~2.6:1 against the lit
+     facade behind it. This reads as the same accent but clears AA. */
+  color: var(--gold-light);
   letter-spacing: -.01em;
   text-shadow: 0 2px 8px rgba(0, 0, 0, .78), 0 6px 34px rgba(0, 0, 0, .68);
 }
@@ -780,19 +817,21 @@ button { font: inherit; color: inherit; }
 /* ---------- 10. Feature grid ---------- */
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.8rem;
 }
 .feature {
-  background: var(--ivory);
-  padding: clamp(1.6rem, 3vw, 2.2rem);
-  transition: background-color .3s var(--ease), transform .3s var(--ease);
+  background: var(--white);
+  padding: clamp(1.8rem, 3vw, 2.2rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease);
 }
-.feature:hover { background: var(--white); }
+.feature:hover { 
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px -10px rgba(28, 23, 20, 0.12);
+  border-color: transparent;
+}
 
 .feature-ico {
   display: grid;
@@ -817,21 +856,23 @@ button { font: inherit; color: inherit; }
 /* ---------- 11. Event cards ---------- */
 .event-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-  gap: clamp(1.2rem, 2.4vw, 2rem);
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: clamp(1.5rem, 2.8vw, 2.5rem);
 }
 .event-card {
   position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: var(--charcoal);
+  background: var(--white);
   box-shadow: var(--shadow);
   isolation: isolate;
+  display: flex;
+  flex-direction: column;
   transition: transform .4s var(--ease), box-shadow .4s var(--ease);
 }
 .event-card:hover { transform: translateY(-7px); box-shadow: var(--shadow-lg); }
 
-.event-link { display: block; color: inherit; }
+.event-link { display: flex; flex-direction: column; height: 100%; color: inherit; }
 .event-link:hover { color: inherit; }
 
 /* Ratio comes from the picture itself (--ar is set by initMediaFit); the
@@ -846,39 +887,60 @@ button { font: inherit; color: inherit; }
 .event-card:hover .event-media img { transform: scale(1.08); filter: saturate(1.05) brightness(1); }
 
 .event-body {
-  position: absolute;
-  inset: auto 0 0;
-  padding: 1.5rem 1.5rem 1.6rem;
-  color: #fff;
-  background: linear-gradient(180deg, transparent, rgba(16, 10, 8, .55) 26%, rgba(16, 10, 8, .93));
+  padding: 2.2rem 2.2rem 2.4rem;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.event-body::after {
+  content: 'Learn more \2192';
+  display: inline-flex;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--maroon);
+  transition: color .3s var(--ease), transform .3s var(--ease);
+}
+.event-card:hover .event-body::after {
+  color: var(--gold);
+  transform: translateX(4px);
 }
 .event-ico {
-  display: grid;
-  place-items: center;
-  width: 40px; height: 40px;
-  margin-bottom: .7rem;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, .1);
-  border: 1px solid rgba(224, 193, 119, .5);
-  backdrop-filter: blur(4px);
-  transition: background-color .35s var(--ease);
+  display: none !important;
 }
-.event-ico svg { width: 20px; height: 20px; fill: var(--gold-light); }
-.event-card:hover .event-ico { background: rgba(194, 154, 60, .28); }
+.event-t { 
+  color: var(--charcoal); 
+  font-size: 1.65rem; 
+  font-weight: 500;
+  margin-bottom: .6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  letter-spacing: -0.01em;
+}
+.event-t::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 1.2em;
+  background: var(--gold);
+  border-radius: 2px;
+  opacity: 0.8;
+  transition: opacity .35s var(--ease), height .35s var(--ease);
+}
+.event-card:hover .event-t::before {
+  opacity: 1;
+  height: 1.4em;
+}
 
-.event-t { color: #fff; font-size: 1.5rem; margin-bottom: .3rem; }
 .event-d {
   margin: 0;
-  font-size: .9rem;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, .78);
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: max-height .45s var(--ease), opacity .35s var(--ease);
+  font-size: 0.95rem;
+  color: var(--muted);
+  line-height: 1.6;
 }
-.event-card:hover .event-d,
-.event-card:focus-within .event-d { max-height: 6rem; opacity: 1; }
 
 /* ---------- 12. Video section ---------- */
 .video-sec {
@@ -1000,7 +1062,12 @@ button { font: inherit; color: inherit; }
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: all .35s cubic-bezier(.25, .8, .25, 1);
+  transition: all .35s var(--ease-out);
+}
+.filter:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 999px;
 }
 .filter:hover {
   color: var(--maroon);
@@ -1022,8 +1089,46 @@ button { font: inherit; color: inherit; }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: clamp(.7rem, 1.4vw, 1.1rem);
-  /* tiles keep their own height instead of stretching to the tallest sibling */
   align-items: start;
+}
+
+/* ---------- 14b. Animated Marquee Gallery ---------- */
+.marquee-wrap {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  overflow: hidden;
+  padding: 1rem 0 2rem;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 1.1rem;
+}
+.gallery-marquee {
+  display: flex;
+  gap: 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: scrollMarquee 30s linear infinite;
+}
+.marquee-track:hover .gallery-marquee {
+  animation-play-state: paused;
+}
+@keyframes scrollMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-100% - 1.1rem)); }
+}
+.gallery-marquee .gal-item {
+  width: 320px;
+  flex-shrink: 0;
+}
+.gallery-marquee .gal-wide {
+  width: 480px;
 }
 .gal-wide { grid-column: span 2; }
 
@@ -1031,7 +1136,7 @@ button { font: inherit; color: inherit; }
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(28, 23, 20, 0.04);
-  transition: opacity .5s cubic-bezier(.25, .8, .25, 1), transform .5s cubic-bezier(.25, .8, .25, 1), box-shadow .5s cubic-bezier(.25, .8, .25, 1);
+  transition: opacity .5s var(--ease-out), transform .5s var(--ease-out), box-shadow .5s var(--ease-out);
 }
 .gal-item:hover {
   transform: translateY(-8px);
@@ -1058,7 +1163,7 @@ button { font: inherit; color: inherit; }
 .gal-btn img {
   width: 100%; height: 100%;
   object-fit: cover;
-  transition: transform 0.9s cubic-bezier(0.25, 1, 0.5, 1), filter .5s var(--ease);
+  transition: transform 0.9s var(--ease-out), filter .5s var(--ease);
 }
 .gal-btn:hover img { transform: scale(1.08); }
 
@@ -1069,7 +1174,7 @@ button { font: inherit; color: inherit; }
   place-items: center;
   background: linear-gradient(180deg, rgba(74, 16, 25, 0) 10%, rgba(74, 16, 25, 0.5) 60%, rgba(74, 16, 25, 0.85) 100%);
   opacity: 0;
-  transition: opacity .45s cubic-bezier(.25, .8, .25, 1);
+  transition: opacity .45s var(--ease-out);
 }
 .gal-btn:hover .gal-overlay,
 .gal-btn:focus-visible .gal-overlay { opacity: 1; }
@@ -1086,7 +1191,7 @@ button { font: inherit; color: inherit; }
   text-transform: uppercase;
   transform: translateY(15px);
   opacity: 0;
-  transition: transform .45s cubic-bezier(.25, .8, .25, 1), opacity .4s var(--ease);
+  transition: transform .45s var(--ease-out), opacity .4s var(--ease);
 }
 .gal-btn:hover .gal-view {
   transform: translateY(0);
@@ -1126,7 +1231,7 @@ button { font: inherit; color: inherit; }
   backface-visibility: hidden;
   box-shadow: 0 4px 15px rgba(28, 23, 20, 0.04);
   border: 2px solid var(--white);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color .3s var(--ease), box-shadow .3s var(--ease);
 }
 
 .gal-item:hover {
@@ -1535,28 +1640,6 @@ a.contact-v { font-size: 1.15rem; font-weight: 500; color: var(--maroon); }
 .dock-call { background: var(--maroon); }
 .dock-wa   { background: var(--wa); }
 
-.to-top {
-  position: fixed;
-  right: clamp(1rem, 3vw, 2rem);
-  bottom: clamp(1rem, 3vw, 2rem);
-  z-index: 91;
-  width: 46px; height: 46px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: var(--white);
-  box-shadow: var(--shadow);
-  cursor: pointer;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity .3s var(--ease), transform .3s var(--ease), background-color .3s var(--ease);
-}
-.to-top.is-visible { opacity: 1; transform: translateY(0); }
-.to-top svg { width: 20px; height: 20px; fill: var(--maroon); transition: fill .3s var(--ease); }
-.to-top:hover { background: var(--maroon); }
-.to-top:hover svg { fill: var(--gold-light); }
-
 /* ---------- 19. Lightbox ---------- */
 /* When the lightbox carries the HTML `hidden` attribute, ensure it truly
    disappears — `display:grid` on `.lightbox` would otherwise override the
@@ -1577,7 +1660,7 @@ a.contact-v { font-size: 1.15rem; font-weight: 500; color: var(--maroon); }
   -webkit-backdrop-filter: blur(10px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: opacity .4s var(--ease-out);
 }
 .lightbox.is-open { opacity: 1; pointer-events: auto; }
 
@@ -1598,7 +1681,7 @@ a.contact-v { font-size: 1.15rem; font-weight: 500; color: var(--maroon); }
   box-shadow: 0 30px 90px -20px rgba(0, 0, 0, .95), 0 0 40px rgba(194, 154, 60, 0.05);
   transform: scale(.93) translateY(15px);
   opacity: 0;
-  transition: transform .5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity .4s var(--ease);
+  transition: transform .5s var(--ease-spring), opacity .4s var(--ease);
 }
 .lightbox.is-open .lb-figure img { transform: scale(1) translateY(0); opacity: 1; }
 .lb-figure img.is-swapping { opacity: 0; transform: scale(.96) translateY(5px); transition: transform .25s var(--ease), opacity .25s var(--ease); }
@@ -1658,7 +1741,10 @@ body.is-locked { overflow: hidden; }
 
   .nav {
     position: fixed;
-    inset: 0 0 0 auto;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    height: 100dvh;
     width: min(340px, 86vw);
     z-index: 99;
     flex-direction: column;
@@ -1692,7 +1778,29 @@ body.is-locked { overflow: hidden; }
   .site-header .nav-link.is-active,
   .site-header.is-stuck .nav-link.is-active { color: var(--maroon); }
 
-  .has-dropdown { display: flex; flex-direction: column; }
+  .has-dropdown { display: flex; flex-direction: column; position: relative; align-items: stretch; }
+  
+  .dropdown-toggle-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    margin: 0;
+    z-index: 2;
+  }
+  .site-header .dropdown-toggle-btn,
+  .site-header.is-stuck .dropdown-toggle-btn {
+    color: var(--charcoal);
+  }
+  .dropdown-toggle-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+  .has-dropdown.is-expanded .dropdown-toggle-btn svg {
+    transform: rotate(180deg);
+  }
+
   .dropdown-menu {
     position: static;
     transform: none;
@@ -1703,6 +1811,16 @@ body.is-locked { overflow: hidden; }
     padding: 0 0 0.5rem 1rem;
     min-width: 100%;
     z-index: 1;
+    background: transparent;
+    display: none;
+  }
+  .has-dropdown.is-expanded .dropdown-menu {
+    display: flex;
+  }
+  
+  .has-dropdown:hover .dropdown-menu,
+  .has-dropdown:focus-within .dropdown-menu {
+    transform: none;
   }
   .dropdown-menu a {
     padding: 0.5rem 1rem;
@@ -1790,9 +1908,8 @@ body.is-locked { overflow: hidden; }
   .form { grid-template-columns: minmax(0, 1fr); }
 
   /* floating dock takes over the bottom edge */
-  .dock { display: flex; }
-  body { padding-bottom: calc(52px + env(safe-area-inset-bottom)); }
-  .to-top { bottom: calc(62px + env(safe-area-inset-bottom)); width: 42px; height: 42px; }
+  .dock { display: none !important; }
+  /* body { padding-bottom: calc(52px + env(safe-area-inset-bottom)); } */
 
   .event-d { max-height: 6rem; opacity: 1; }
 
@@ -1862,6 +1979,7 @@ body.is-locked { overflow: hidden; }
   }
   .reveal { opacity: 1; transform: none; }
   .hero-img { animation: none; transform: none; }
+  .floating-wa { animation: none !important; }
 }
 
 /* --- Input Prefix --- */
@@ -1883,7 +2001,7 @@ body.is-locked { overflow: hidden; }
 
 /* --- print --- */
 @media print {
-  .site-header, .dock, .to-top, .hero-scroll, .video-sec, .map-wrap, .lightbox { display: none !important; }
+  .site-header, .dock, .floating-wa, .hero-scroll, .video-sec, .map-wrap, .lightbox { display: none !important; }
   body { background: #fff; color: #000; padding: 0; }
   .hero { min-height: auto; }
 }
@@ -2128,6 +2246,7 @@ img[data-fade].is-loaded {
   .btn::after, .sheen::before { display: none; }
   .scroll-progress { display: none; }
   .eyebrow-rule { transform: none !important; }
+  .floating-wa { animation: none !important; }
 }
 
 /* =====================================================================
@@ -2198,7 +2317,7 @@ a.frame:focus-visible::before { opacity: 1; }
   border-radius: 50%;
   background: #25D366;
   color: white;
-  transition: transform .3s ease;
+  transition: transform .3s var(--ease);
   animation: waBlink 2s infinite;
 }
 .floating-wa.is-visible {
@@ -2220,4 +2339,66 @@ a.frame:focus-visible::before { opacity: 1; }
   transform: translateY(10px);
     bottom: calc(62px + env(safe-area-inset-bottom) + 1rem);
   }
+}
+
+/* =====================================================================
+   24. Legibility & touch targets
+   Two rules drive this section:
+   1. No rendered text below 12px — 0.62rem-class labels were computing to
+      ~9-11px on phones, which is under the readable floor.
+   2. Every interactive element clears 44px in at least one axis and 24px in
+      the other on coarse pointers. Footer links were 17-20px tall.
+   Sizes are raised here rather than in the original rules so the desktop
+   compact rhythm is preserved and only the failing cases change.
+   ===================================================================== */
+
+/* ---------- 24.1 Minimum readable type ---------- */
+.brand-sub      { font-size: .75rem; letter-spacing: .18em; }
+.contact-k      { font-size: .75rem; }
+.footer-name span { font-size: .75rem; letter-spacing: .18em; }
+.stat-label     { font-size: .75rem; }
+.footer-h       { font-size: .78rem; }
+
+/* Below 12px is unreadable, so narrow screens trade letter-spacing — not
+   font-size — to keep the brand lockup on one line. */
+@media (max-width: 760px) {
+  .brand-sub { letter-spacing: .12em; }
+}
+@media (max-width: 480px) {
+  .brand-sub  { letter-spacing: .07em; }
+  .stat-label { letter-spacing: .08em; }
+}
+@media (max-width: 360px) {
+  .brand-name { font-size: 1.06rem; }
+  .brand-sub  { letter-spacing: .03em; }
+}
+
+/* ---------- 24.2 Touch targets ----------
+   Scoped to coarse pointers so mouse users keep the tighter desktop rhythm.
+   inline-flex keeps the hit box to the text width (always >24px here) while
+   the min-height gives the full 44px vertical target. */
+@media (pointer: coarse) {
+  .footer-col ul { gap: 0; }
+
+  .footer-col a,
+  .footer-contact a,
+  .footer-bottom a,
+  .contact-v,
+  .reach-link,
+  .fac-title-link,
+  .crumbs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* padding, not min-height: these sit inside a fixed-height bar and must
+     grow their hit box without changing the bar's layout height. */
+  .brand { padding-block: .4rem; }
+
+  .filter { min-height: 44px; padding-block: 0; }
+
+  .dropdown-menu a { padding-block: .8rem; }
+
+  .footer-bottom { gap: .2rem 1rem; }
 }
