@@ -870,7 +870,7 @@ body.is-locked .brand-sub { color: var(--maroon); }
 /* ---------- 11. Event cards ---------- */
 .event-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
   gap: clamp(1.5rem, 2.8vw, 2.5rem);
 }
 .event-card {
@@ -889,8 +889,8 @@ body.is-locked .brand-sub { color: var(--maroon); }
 .event-link { display: flex; flex-direction: column; height: 100%; color: inherit; }
 .event-link:hover { color: inherit; }
 
-/* Ratio comes from the picture itself (--ar is set by initMediaFit); the
-   fallback matches the 1200x896 event artwork so nothing is cropped. */
+/* Fixed 3:2 aspect-ratio via padding-top for full cross-browser compatibility.
+   Images are absolutely positioned inside to fill the box. */
 .event-media {
   position: relative;
   width: 100%;
@@ -910,7 +910,7 @@ body.is-locked .brand-sub { color: var(--maroon); }
 .event-card:hover .event-media img { transform: scale(1.08); filter: saturate(1.05) brightness(1); }
 
 .event-body {
-  padding: 2.2rem 2.2rem 2.4rem;
+  padding: clamp(1.4rem, 3vw, 2.2rem) clamp(1.4rem, 3vw, 2.2rem) clamp(1.6rem, 3vw, 2.4rem);
   background: transparent;
   display: flex;
   flex-direction: column;
