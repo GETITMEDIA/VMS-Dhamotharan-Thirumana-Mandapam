@@ -786,7 +786,7 @@ body.is-locked .brand-sub { color: var(--maroon); }
   align-items: center;
 }
 .about-visual { position: relative; }
-.about-visual .frame { aspect-ratio: var(--ar, 1400 / 790); }
+.about-visual .frame { aspect-ratio: 1 / 1; }
 
 .about-badge {
   position: absolute;
