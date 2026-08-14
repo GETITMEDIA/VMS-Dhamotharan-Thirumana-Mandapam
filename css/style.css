@@ -660,8 +660,7 @@ body.is-locked .brand-sub { color: var(--maroon); }
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(18, 10, 8, .70) 0%, rgba(18, 10, 8, .42) 45%, rgba(18, 10, 8, .88) 100%);
+  background: linear-gradient(to top, rgba(11, 7, 6, 0.9) 0%, rgba(11, 7, 6, 0.4) 35%, transparent 60%);
 }
 
 .page-hero .eyebrow { color: var(--gold-light); }
