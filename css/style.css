@@ -311,6 +311,15 @@ button { font: inherit; color: inherit; }
 }
 .site-header.is-stuck::after { opacity: 0; }
 
+body.is-locked .site-header {
+  background: var(--white);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+body.is-locked .site-header::after { opacity: 0; }
+body.is-locked .brand-name { color: var(--charcoal); }
+body.is-locked .brand-sub { color: var(--maroon); }
+
 .header-inner {
   display: flex;
   align-items: center;
@@ -525,7 +534,7 @@ button { font: inherit; color: inherit; }
   /* Safe with the widened desktop source (hero-wide-*): the extra night sky on
      either side absorbs the crop, so the facade itself is never clipped. */
   object-fit: cover;
-  object-position: center 50%;
+  object-position: center 20%;
   filter: brightness(1.06) saturate(1.04);
   animation: heroPanSubtle 24s ease-in-out infinite alternate;
 }
@@ -1770,26 +1779,28 @@ body.is-locked { overflow: hidden; }
 
   .nav {
     position: fixed;
-    top: 0;
+    top: var(--nav-h);
+    left: 0;
     right: 0;
-    height: 100vh;
-    height: 100dvh;
-    width: min(340px, 86vw);
+    height: auto;
+    max-height: calc(100dvh - var(--nav-h));
+    width: 100%;
     z-index: 99;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
     gap: 0;
-    padding: calc(var(--nav-h) + 1.5rem) 1.8rem 2rem;
-    background: var(--ivory);
-    box-shadow: -20px 0 60px -30px rgba(0, 0, 0, .6);
-    transform: translateX(100%);
+    padding: 1.5rem 1.8rem 2.5rem;
+    background: var(--white);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, .4);
+    transform: translateY(-10px);
+    opacity: 0;
     visibility: hidden;
-    transition: transform .38s var(--ease), visibility .38s var(--ease);
+    transition: transform .3s var(--ease), opacity .3s var(--ease), visibility .3s var(--ease);
     overflow-y: auto;
     overscroll-behavior: contain;
   }
-  .nav.is-open { transform: translateX(0); visibility: visible; }
+  .nav.is-open { transform: translateY(0); opacity: 1; visibility: visible; }
 
   .nav-list { flex-direction: column; align-items: stretch; gap: 0; }
   .nav-list li { border-bottom: 1px solid var(--line); }
@@ -1806,6 +1817,13 @@ body.is-locked { overflow: hidden; }
   .nav-link::after { display: none; }
   .site-header .nav-link.is-active,
   .site-header.is-stuck .nav-link.is-active { color: var(--maroon); }
+
+  .nav-cta {
+    align-self: center;
+    width: auto;
+    margin-top: 1.5rem;
+    padding: 0.8rem 2.5rem;
+  }
 
   .has-dropdown { display: flex; flex-direction: column; position: relative; align-items: stretch; }
   
@@ -1873,20 +1891,8 @@ body.is-locked { overflow: hidden; }
   .map-wrap-tall { aspect-ratio: 16 / 11; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1.6rem 1rem; }
   .stat:nth-child(3)::before { display: none; }
-}
 
-@media (max-width: 760px) {
-  :root { --nav-h: 72px; }
-  .site-header.is-stuck { --nav-h: 60px; }
-
-  .brand-name { font-size: 1.05rem; }
-  .brand-sub  { font-size: .56rem; }
-  .brand-mark { width: 34px; height: 34px; }
-
-  /* Phones stack instead of overlaying. A wide building cannot fill a tall
-     phone viewport without being cropped to its middle columns, and centred
-     text on top hides whatever survives. So: photo at its true 3:2 ratio with
-     the whole facade visible, copy on solid charcoal underneath. */
+  /* Phones and tablets stack instead of overlaying */
   .hero {
     min-height: 0;
     display: block;
@@ -1898,7 +1904,7 @@ body.is-locked { overflow: hidden; }
     position: relative;
     inset: auto;
     z-index: 0;
-    padding-top: var(--nav-h);
+    padding-top: 0;
     background: #0B0706;
   }
   .hero-img {
@@ -1906,8 +1912,8 @@ body.is-locked { overflow: hidden; }
     inset: auto;
     width: 100%;
     height: auto;
-    aspect-ratio: 1537 / 1023;
-    object-position: center 50%;
+    aspect-ratio: 16 / 10;
+    object-position: center 15%;
     animation: none;
     transform: none;
   }
@@ -1919,13 +1925,31 @@ body.is-locked { overflow: hidden; }
   .hero-inner {
     position: relative;
     z-index: 1;
-    padding-block: .25rem 3rem;
-    background: var(--charcoal);
+    padding: 3rem 1.8rem;
+    background: linear-gradient(180deg, #241D19 0%, var(--charcoal) 100%);
+    border-top: 1px solid rgba(194, 154, 60, 0.25);
+    border-radius: 2rem 2rem 0 0;
+    margin-top: -2.5rem;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+    text-align: center;
   }
+  .hero .eyebrow { justify-content: center; }
   .hero-title-main { color: var(--gold-light); }
-  .hero-lede { font-size: .99rem; line-height: 1.66; }
+  .hero-lede { font-size: 1.05rem; line-height: 1.6; margin-inline: auto; color: rgba(255,255,255,0.9); }
   .hero-scroll { display: none; }
+  .hero-actions { justify-content: center; margin-top: 2rem; }
+}
 
+@media (max-width: 760px) {
+  :root { --nav-h: 72px; }
+  .site-header.is-stuck { --nav-h: 60px; }
+
+  .brand-name { font-size: 1.25rem; }
+  .brand-sub  { font-size: .65rem; }
+  .brand-mark { width: 66px; height: 66px; }
+  .brand-logo-img { width: 100%; height: 100%; }
+
+  /* Phones button stacking */
   .hero-actions { gap: .7rem; margin-top: 1.6rem; }
   .hero-actions .btn { flex: 1 1 auto; min-width: 0; }
   .hero-actions .btn-ghost { flex-basis: 100%; }
@@ -1958,8 +1982,8 @@ body.is-locked { overflow: hidden; }
 @media (max-width: 480px) {
   .site-header { --nav-h: 70px; }
   .site-header.is-stuck { --nav-h: 60px; }
-  .brand-logo-img { width: 56px; height: 56px; }
-  .brand-name { font-size: 1rem; }
+  .brand-mark { width: 60px; height: 60px; }
+  .brand-name { font-size: 1.2rem; }
   .btn { padding: .78rem 1.15rem; font-size: .82rem; letter-spacing: .04em; }
   .btn-lg { padding: .9rem 1.3rem; font-size: .85rem; }
 
