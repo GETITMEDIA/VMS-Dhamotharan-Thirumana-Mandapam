@@ -712,7 +712,7 @@
         // Mobile never stacks — let the grid sit at its natural CSS height
         // rather than a JS-measured pixel value, so it keeps reflowing
         // correctly across rotation and resize.
-        if (wrapper) wrapper.style.height = '';
+        if (wrapper) wrapper.style.height = 'auto';
       } else {
         // Expand before the cards start moving out, so none of them are
         // clipped as they travel back to their natural grid positions.

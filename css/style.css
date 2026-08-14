@@ -536,11 +536,11 @@ body.is-locked .brand-sub { color: var(--maroon); }
   object-fit: cover;
   object-position: center 20%;
   filter: brightness(1.06) saturate(1.04);
-  animation: heroPanSubtle 24s ease-in-out infinite alternate;
+  animation: heroPanSubtle 12s ease-in-out infinite alternate;
 }
 @keyframes heroPanSubtle {
   from { transform: scale(1.0); }
-  to   { transform: scale(1.035); }
+  to   { transform: scale(1.15); }
 }
 
 .hero-video { opacity: 0; transition: opacity 1.1s var(--ease); }
@@ -1974,8 +1974,6 @@ body.is-locked { overflow: hidden; }
     height: auto;
     aspect-ratio: 16 / 10;
     object-position: center 15%;
-    animation: none;
-    transform: none;
   }
   .hero-veil {
     inset: auto 0 0 0;
@@ -2015,6 +2013,7 @@ body.is-locked { overflow: hidden; }
   .hero-actions .btn-ghost { flex-basis: 100%; }
 
   .gal-wide { grid-column: span 1; }
+  .gallery-stack-container { height: auto; }
   .gallery { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 
   .form { grid-template-columns: minmax(0, 1fr); }
