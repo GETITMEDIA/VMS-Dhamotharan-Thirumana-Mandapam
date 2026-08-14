@@ -891,8 +891,17 @@ body.is-locked .brand-sub { color: var(--maroon); }
 
 /* Ratio comes from the picture itself (--ar is set by initMediaFit); the
    fallback matches the 1200x896 event artwork so nothing is cropped. */
-.event-media { aspect-ratio: var(--ar, 1200 / 896); }
+.event-media {
+  position: relative;
+  width: 100%;
+  padding-top: 66.6666%; /* 3:2 Aspect Ratio */
+  flex-shrink: 0;
+  overflow: hidden;
+}
 .event-media img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%; height: 100%;
   object-fit: cover;
   transition: transform .85s var(--ease), filter .5s var(--ease);
@@ -1215,6 +1224,58 @@ body.is-locked .brand-sub { color: var(--maroon); }
 }
 
 .gal-empty { text-align: center; color: var(--muted); margin-top: 2rem; }
+
+
+/* ---------- Service 5-Image Mosaic ---------- */
+.service-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(.7rem, 1.4vw, 1.1rem);
+}
+.service-gallery .gal-item {
+  grid-column: span 1;
+}
+.service-gallery .gal-item.gal-wide {
+  grid-column: span 1;
+}
+.service-gallery .gal-item:nth-child(1) {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+.service-gallery .gal-btn {
+  aspect-ratio: 1;
+}
+.service-gallery .gal-item:nth-child(1) .gal-btn {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+@media (max-width: 768px) {
+  .service-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .service-gallery .gal-item:nth-child(1) {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  .service-gallery .gal-item:nth-child(1) .gal-btn {
+    aspect-ratio: 21/9;
+  }
+}
+@media (max-width: 480px) {
+  .service-gallery {
+    grid-template-columns: 1fr;
+  }
+  .service-gallery .gal-item,
+  .service-gallery .gal-item:nth-child(1) {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  .service-gallery .gal-btn,
+  .service-gallery .gal-item:nth-child(1) .gal-btn {
+    aspect-ratio: 4/3;
+  }
+}
 
 /* 3D Grid-to-Stack Morph Gallery
    Height is driven from JS (initGalleryStack): tight around the collapsed
@@ -2457,3 +2518,5 @@ a.frame:focus-visible::before { opacity: 1; }
 
   .footer-bottom { gap: .2rem 1rem; }
 }
+
+
